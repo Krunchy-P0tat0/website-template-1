@@ -7,32 +7,46 @@ export default function Home() {
   return (
     <div className="w-full">
       {/* Hero */}
-      <section className="relative h-screen w-full flex items-center justify-center overflow-hidden">
+      <section className="relative h-[85vh] md:h-screen w-full flex items-center justify-center overflow-hidden">
+        {/* Video background with image fallback */}
         <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster={scenes.heroHome}
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          >
+            <source src="/videos/hero.mp4" type="video/mp4" />
+          </video>
+          {/* Fallback image shown while video loads or if unsupported */}
           <img
             src={scenes.heroHome}
             alt="Cinematic luxury wedding"
-            className="w-full h-full max-w-full object-cover object-center"
+            className="absolute inset-0 w-full h-full object-cover object-center -z-10"
             loading="eager"
           />
-          <div className="absolute inset-0 bg-black/20 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+          {/* Dark overlay */}
+          <div className="absolute inset-0 bg-black/35" />
+          {/* Gradient: dark at bottom for text separation from page */}
+          <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-black/10" />
         </div>
-        
-        <div className="relative z-10 text-center px-6 mt-20">
-          <motion.p 
+
+        <div className="relative z-10 text-center px-6">
+          <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="text-white/80 text-xs uppercase tracking-[0.3em] mb-6"
+            className="text-white/75 text-xs uppercase tracking-[0.35em] mb-8"
           >
             New York · Los Angeles · Miami · Florence
           </motion.p>
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.2 }}
-            className="text-white font-serif text-5xl md:text-7xl lg:text-8xl tracking-tight mb-8"
+            className="text-white font-serif text-5xl md:text-7xl lg:text-8xl tracking-tight mb-10 leading-[1.05]"
           >
             The Art of<br/>Celebration
           </motion.h1>
@@ -41,7 +55,10 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: 0.3 }}
           >
-            <Link href="/inquiry" className="inline-block border border-white/50 text-white text-xs uppercase tracking-widest px-8 py-4 hover:bg-white hover:text-black transition-colors duration-200">
+            <Link
+              href="/inquiry"
+              className="inline-block border border-white/40 text-white text-xs uppercase tracking-widest px-10 py-4 hover:bg-white hover:text-black transition-colors duration-200 backdrop-blur-[2px]"
+            >
               Inquire Now
             </Link>
           </motion.div>
