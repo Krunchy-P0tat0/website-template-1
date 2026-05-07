@@ -20,17 +20,17 @@ export default function Corporate() {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
         <div className="relative z-10 container mx-auto px-6 md:px-12 pb-20">
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
             className="text-white/80 text-xs uppercase tracking-[0.3em] mb-6"
           >
             Corporate
           </motion.p>
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.4 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
             className="text-white font-serif text-4xl md:text-6xl lg:text-7xl tracking-tight max-w-4xl leading-[1.05]"
           >
             High-impact moments,<br/>quietly choreographed.
@@ -41,20 +41,20 @@ export default function Corporate() {
       <section className="py-32 px-6 md:px-12">
         <div className="max-w-3xl mx-auto text-center">
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
             className="font-serif text-3xl md:text-4xl leading-snug mb-8"
           >
             We produce the room your brand walks into — the lighting, the
             pacing, the press preview, the after-party.
           </motion.h2>
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
             className="text-foreground/70 leading-relaxed"
           >
             Our corporate division partners with global brands, foundations,
@@ -81,10 +81,10 @@ export default function Corporate() {
                 }`}
               >
                 <motion.div
-                  initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+                  initial={{ opacity: 0, x: i % 2 === 0 ? -16 : 16 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8 }}
+                  transition={{ duration: 0.4 }}
                 >
                   <img
                     src={offering.image}
@@ -93,10 +93,10 @@ export default function Corporate() {
                   />
                 </motion.div>
                 <motion.div
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
+                  transition={{ duration: 0.4, delay: 0.1 }}
                 >
                   <p className="text-xs uppercase tracking-[0.3em] text-primary mb-4">
                     0{i + 1} — Service
@@ -134,7 +134,7 @@ export default function Corporate() {
               </h2>
               <Link
                 href="/portfolio"
-                className="text-xs uppercase tracking-widest hover:text-primary transition-colors pb-1 border-b border-foreground/20"
+                className="text-xs uppercase tracking-widest hover:text-primary transition-colors duration-200 pb-1 border-b border-foreground/20"
               >
                 View Full Portfolio
               </Link>
@@ -143,10 +143,10 @@ export default function Corporate() {
               {corporateProjects.map((project, i) => (
                 <motion.div
                   key={project.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: i * 0.15 }}
+                  transition={{ duration: 0.4, delay: i * 0.08 }}
                   className={`group ${i === 1 ? "md:mt-24" : ""}`}
                 >
                   <Link href={`/portfolio/${project.slug}`}>
@@ -154,7 +154,7 @@ export default function Corporate() {
                       <img
                         src={project.image}
                         alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                       />
                     </div>
                     <h3 className="font-serif text-2xl mb-1">
@@ -177,7 +177,7 @@ export default function Corporate() {
         </h2>
         <Link
           href="/inquiry"
-          className="inline-block border border-foreground text-foreground text-xs uppercase tracking-widest px-10 py-4 hover:bg-foreground hover:text-background transition-colors duration-500"
+          className="inline-block border border-foreground text-foreground text-xs uppercase tracking-widest px-10 py-4 hover:bg-foreground hover:text-background transition-colors duration-200"
         >
           Begin a Conversation
         </Link>

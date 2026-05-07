@@ -10,9 +10,9 @@ export default function Weddings() {
     <div className="w-full bg-background">
       <section className="pt-32 pb-24 px-6 md:px-12">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.4 }}
           className="max-w-4xl mx-auto text-center"
         >
           <p className="text-xs uppercase tracking-[0.3em] text-primary mb-6">
@@ -43,10 +43,10 @@ export default function Weddings() {
       <section className="py-24 px-6 md:px-12 bg-secondary/30">
         <div className="container mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
             className="max-w-3xl mx-auto text-center mb-20"
           >
             <p className="text-xs uppercase tracking-[0.3em] text-primary mb-6">
@@ -61,10 +61,10 @@ export default function Weddings() {
             {weddingOfferings.map((item, i) => (
               <motion.div
                 key={item.title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: (i % 3) * 0.1 }}
+                transition={{ duration: 0.4, delay: (i % 3) * 0.07 }}
                 className="border-t border-border pt-8"
               >
                 <p className="text-xs uppercase tracking-[0.3em] text-primary mb-4">
@@ -84,10 +84,10 @@ export default function Weddings() {
         <section className="py-32 px-6 md:px-12">
           <div className="container mx-auto">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.4 }}
               className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6"
             >
               <h2 className="font-serif text-4xl md:text-5xl leading-tight">
@@ -95,7 +95,7 @@ export default function Weddings() {
               </h2>
               <Link
                 href="/portfolio"
-                className="text-xs uppercase tracking-widest hover:text-primary transition-colors pb-1 border-b border-foreground/20"
+                className="text-xs uppercase tracking-widest hover:text-primary transition-colors duration-200 pb-1 border-b border-foreground/20"
               >
                 View Full Portfolio
               </Link>
@@ -105,10 +105,10 @@ export default function Weddings() {
               {weddings.map((project, i) => (
                 <motion.div
                   key={project.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: i * 0.15 }}
+                  transition={{ duration: 0.4, delay: i * 0.08 }}
                   className={`group ${i % 2 === 1 ? "md:mt-32" : ""}`}
                 >
                   <Link href={`/portfolio/${project.slug}`}>
@@ -116,7 +116,7 @@ export default function Weddings() {
                       <img
                         src={project.image}
                         alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                       />
                     </div>
                     <h3 className="font-serif text-3xl mb-2">{project.title}</h3>
@@ -137,7 +137,7 @@ export default function Weddings() {
         </h2>
         <Link
           href="/inquiry"
-          className="inline-block border border-foreground text-foreground text-xs uppercase tracking-widest px-10 py-4 hover:bg-foreground hover:text-background transition-colors duration-500"
+          className="inline-block border border-foreground text-foreground text-xs uppercase tracking-widest px-10 py-4 hover:bg-foreground hover:text-background transition-colors duration-200"
         >
           Begin a Conversation
         </Link>

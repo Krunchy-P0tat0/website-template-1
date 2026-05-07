@@ -10,7 +10,7 @@ export default function About() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.4 }}
           className="max-w-4xl mx-auto text-center"
         >
           <p className="text-xs uppercase tracking-[0.3em] text-primary mb-6">
@@ -34,7 +34,7 @@ export default function About() {
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
           >
             <img
               src={scenes.aboutAtelier}
@@ -47,7 +47,7 @@ export default function About() {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
             className="max-w-lg"
           >
             <p className="text-xs uppercase tracking-[0.3em] text-primary mb-4">
@@ -78,7 +78,7 @@ export default function About() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
             className="max-w-3xl mx-auto text-center mb-20"
           >
             <p className="text-xs uppercase tracking-[0.3em] text-primary mb-6">
@@ -96,7 +96,7 @@ export default function About() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.15 }}
+                transition={{ duration: 0.35, delay: i * 0.15 }}
                 className="border-t border-border pt-8"
               >
                 <p className="text-xs uppercase tracking-[0.3em] text-primary mb-4">
@@ -118,7 +118,7 @@ export default function About() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
             className="max-w-3xl mx-auto text-center mb-20"
           >
             <p className="text-xs uppercase tracking-[0.3em] text-primary mb-6">
@@ -136,7 +136,7 @@ export default function About() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
+                transition={{ duration: 0.35, delay: i * 0.1 }}
                 className="border-t border-border pt-8"
               >
                 <h3 className="font-serif text-3xl mb-3">{atelier.city}</h3>
@@ -158,7 +158,7 @@ export default function About() {
         </h2>
         <Link
           href="/inquiry"
-          className="inline-block border border-foreground text-foreground text-xs uppercase tracking-widest px-10 py-4 hover:bg-foreground hover:text-background transition-colors duration-500"
+          className="inline-block border border-foreground text-foreground text-xs uppercase tracking-widest px-10 py-4 hover:bg-foreground hover:text-background transition-colors duration-200"
         >
           Begin a Conversation
         </Link>

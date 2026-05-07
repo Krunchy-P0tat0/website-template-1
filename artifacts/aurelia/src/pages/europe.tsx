@@ -18,7 +18,7 @@ export default function Europe() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
             className="text-white/80 text-xs uppercase tracking-[0.3em] mb-6"
           >
             Aurelia & Co. — Florence Atelier
@@ -26,7 +26,7 @@ export default function Europe() {
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.4 }}
+            transition={{ duration: 0.4, delay: 0.4 }}
             className="text-white font-serif text-5xl md:text-7xl lg:text-8xl tracking-tight leading-[1.05] mb-8"
           >
             Aurelia Europe
@@ -34,7 +34,7 @@ export default function Europe() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.6 }}
+            transition={{ duration: 0.4, delay: 0.6 }}
             className="text-white/80 max-w-2xl mx-auto leading-relaxed"
           >
             A dedicated atelier rooted in Florence, designing celebrations
@@ -55,7 +55,7 @@ export default function Europe() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: i * 0.15 }}
+              transition={{ duration: 0.4, delay: i * 0.15 }}
             >
               <p className="font-serif text-6xl md:text-7xl mb-4">
                 {stat.number}
@@ -74,7 +74,7 @@ export default function Europe() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
             className="max-w-3xl mx-auto text-center mb-20"
           >
             <h2 className="font-serif text-4xl md:text-5xl mb-8 leading-tight">
@@ -95,7 +95,7 @@ export default function Europe() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: (i % 2) * 0.1 }}
+                transition={{ duration: 0.35, delay: (i % 2) * 0.1 }}
                 className="border-t border-border pt-8"
               >
                 <h3 className="font-serif text-3xl mb-4">{service.title}</h3>
@@ -114,7 +114,7 @@ export default function Europe() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
           >
             <p className="text-xs uppercase tracking-[0.3em] text-primary mb-6">
               The Florence Atelier
@@ -135,7 +135,7 @@ export default function Europe() {
             </p>
             <Link
               href="/inquiry"
-              className="inline-block border border-foreground text-foreground text-xs uppercase tracking-widest px-8 py-4 hover:bg-foreground hover:text-background transition-colors duration-500"
+              className="inline-block border border-foreground text-foreground text-xs uppercase tracking-widest px-8 py-4 hover:bg-foreground hover:text-background transition-colors duration-200"
             >
               Plan a European Celebration
             </Link>
@@ -144,7 +144,7 @@ export default function Europe() {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
           >
             <img
               src={scenes.europeAccent}

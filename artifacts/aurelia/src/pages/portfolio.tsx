@@ -27,9 +27,9 @@ export default function Portfolio() {
     <div className="w-full bg-background pt-32 pb-24">
       <div className="container mx-auto px-6 md:px-12">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.4 }}
           className="max-w-3xl mx-auto text-center mb-20"
         >
           <p className="text-xs uppercase tracking-[0.3em] text-primary mb-6">
@@ -54,7 +54,7 @@ export default function Portfolio() {
                 setActiveCategory(cat);
                 setShowAll(false);
               }}
-              className={`text-xs uppercase tracking-widest pb-1 border-b transition-colors ${
+              className={`text-xs uppercase tracking-widest pb-1 border-b transition-colors duration-200 ${
                 activeCategory === cat
                   ? "border-primary text-primary"
                   : "border-transparent text-foreground/50 hover:text-foreground"
@@ -71,10 +71,10 @@ export default function Portfolio() {
               <motion.div
                 key={project.id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.5 }}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 12 }}
+                transition={{ duration: 0.3 }}
                 className={`group cursor-pointer ${i % 2 === 1 ? "md:mt-24" : ""}`}
               >
                 <Link href={`/portfolio/${project.slug}`}>
@@ -82,7 +82,7 @@ export default function Portfolio() {
                     <img
                       src={project.image}
                       alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                     />
                   </div>
                   <div className="flex justify-between items-start">
@@ -102,9 +102,9 @@ export default function Portfolio() {
 
         {!isFiltered && !showAll && hiddenCount > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
             className="flex flex-col items-center mt-20 gap-4"
           >
             <p className="text-xs uppercase tracking-[0.25em] text-foreground/40">
@@ -112,7 +112,7 @@ export default function Portfolio() {
             </p>
             <button
               onClick={() => setShowAll(true)}
-              className="text-xs uppercase tracking-widest border border-foreground/30 px-10 py-4 hover:border-primary hover:text-primary transition-colors"
+              className="text-xs uppercase tracking-widest border border-foreground/30 px-10 py-4 hover:border-primary hover:text-primary transition-colors duration-200"
             >
               View More
             </button>
@@ -123,6 +123,7 @@ export default function Portfolio() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
             className="flex justify-center mt-20"
           >
             <p className="text-xs uppercase tracking-[0.25em] text-foreground/40">

@@ -127,7 +127,7 @@ export default function Inquiry() {
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           className="text-center max-w-xl px-6"
         >
           <div className="text-[11px] uppercase tracking-[0.3em] text-primary mb-6">
@@ -159,7 +159,7 @@ export default function Inquiry() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-4"
         >
           <h1 className="font-serif text-3xl md:text-5xl tracking-tight text-foreground/90 leading-tight">
@@ -170,7 +170,7 @@ export default function Inquiry() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-12"
         >
           <p className="font-serif text-base md:text-lg tracking-wide text-foreground/80 mb-3">
@@ -205,7 +205,7 @@ export default function Inquiry() {
           onSubmit={handleSubmit(onSubmit)}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.4, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
           className="space-y-8"
         >
           {/* Section: Tell us about your event */}

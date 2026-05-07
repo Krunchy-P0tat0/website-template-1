@@ -36,7 +36,7 @@ export default function DestinationDetail() {
         <motion.img
           initial={{ scale: 1.08, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           src={dest.hero}
           alt={dest.name}
           className="absolute inset-0 w-full h-full object-cover"
@@ -46,7 +46,7 @@ export default function DestinationDetail() {
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.4 }}
+          transition={{ duration: 0.4, delay: 0.4 }}
           className="absolute inset-0 flex flex-col items-center justify-end pb-20 px-6 text-center text-background"
         >
           <Link
@@ -74,7 +74,7 @@ export default function DestinationDetail() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
             className="text-center mb-14"
           >
             <div className="text-[11px] uppercase tracking-[0.3em] text-primary mb-5">
@@ -90,7 +90,7 @@ export default function DestinationDetail() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, delay: 0.1 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
             className="space-y-6"
           >
             {dest.paragraphs.map((p, i) => (
@@ -112,7 +112,7 @@ export default function DestinationDetail() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
             className="text-center mb-14"
           >
             <div className="text-[11px] uppercase tracking-[0.3em] text-primary mb-4">
@@ -133,7 +133,7 @@ export default function DestinationDetail() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-50px" }}
                 transition={{
-                  duration: 0.8,
+                  duration: 0.4,
                   delay: i * 0.08,
                   ease: [0.22, 1, 0.36, 1],
                 }}
@@ -146,7 +146,7 @@ export default function DestinationDetail() {
                 <img
                   src={src}
                   alt={`${dest.name} — event ${i + 1}`}
-                  className="w-full h-full object-cover transition-transform duration-[1.6s] hover:scale-105"
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-[1.03]"
                   loading={i < 2 ? "eager" : "lazy"}
                 />
               </motion.div>
@@ -164,7 +164,7 @@ export default function DestinationDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
+                transition={{ duration: 0.4 }}
                 className="text-center mb-14"
               >
                 <div className="text-[11px] uppercase tracking-[0.3em] text-primary mb-4">
@@ -184,7 +184,7 @@ export default function DestinationDetail() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.6, delay: i * 0.08 }}
+                    transition={{ duration: 0.35, delay: i * 0.08 }}
                     className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-4 md:gap-10 py-7 border-t border-border/50 last:border-b"
                   >
                     <div className="font-serif text-xl md:text-2xl tracking-tight text-foreground">
@@ -210,7 +210,7 @@ export default function DestinationDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.35 }}
                 className="text-center"
               >
                 <div className="font-serif text-5xl md:text-6xl text-foreground mb-2">
@@ -226,7 +226,7 @@ export default function DestinationDetail() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 }}
+                transition={{ duration: 0.35, delay: 0.1 }}
                 className="text-center"
               >
                 <div className="font-serif text-xl md:text-2xl text-foreground mb-2 leading-snug px-2">
@@ -241,7 +241,7 @@ export default function DestinationDetail() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
+              transition={{ duration: 0.35, delay: 0.2 }}
               className="text-center"
             >
               <div className="font-serif text-xl md:text-2xl text-foreground mb-2 leading-snug">
@@ -262,7 +262,7 @@ export default function DestinationDetail() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
             className="max-w-2xl mx-auto"
           >
             <div className="text-[11px] uppercase tracking-[0.3em] text-primary mb-6">
@@ -302,7 +302,7 @@ export default function DestinationDetail() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8 }}
+              transition={{ duration: 0.4 }}
               className="text-center mb-14"
             >
               <div className="text-[11px] uppercase tracking-[0.3em] text-primary mb-4">
@@ -320,7 +320,7 @@ export default function DestinationDetail() {
                   initial={{ opacity: 0, y: 30 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-50px" }}
-                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                  transition={{ duration: 0.35, delay: i * 0.1 }}
                 >
                   <Link
                     href={`/destinations/${r.slug}`}
@@ -330,7 +330,7 @@ export default function DestinationDetail() {
                       <img
                         src={r.hero}
                         alt={r.name}
-                        className="w-full h-full object-cover transition-transform duration-[1.6s] group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                         loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 to-transparent" />

@@ -140,7 +140,7 @@ export default function Careers() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="text-center max-w-3xl mx-auto mb-20"
         >
           <div className="text-[11px] uppercase tracking-[0.3em] text-primary mb-4">
@@ -162,7 +162,7 @@ export default function Careers() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.4 }}
           className="border-y border-border py-12 mb-24"
         >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
@@ -189,7 +189,7 @@ export default function Careers() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.4 }}
           className="mb-24"
         >
           <div className="text-center mb-12">
@@ -218,7 +218,7 @@ export default function Careers() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.4 }}
           className="border-t border-border pt-16 mb-24"
         >
           <div className="text-center mb-12">
@@ -280,7 +280,7 @@ export default function Careers() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.4 }}
           className="border-t border-border pt-16 mb-24"
         >
           <div className="text-center mb-12">
@@ -317,7 +317,7 @@ export default function Careers() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.4 }}
           className="border-t border-border pt-16 mb-24 max-w-4xl mx-auto"
         >
           <div className="text-center mb-12">
@@ -355,7 +355,7 @@ export default function Careers() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.4 }}
           className="border-t border-border pt-16 text-center max-w-2xl mx-auto"
         >
           <h2 className="font-serif text-3xl md:text-4xl mb-5 tracking-tight">

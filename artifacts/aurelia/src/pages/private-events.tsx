@@ -20,17 +20,17 @@ export default function PrivateEvents() {
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
         <div className="relative z-10 container mx-auto px-6 md:px-12 pb-20">
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
             className="text-white/80 text-xs uppercase tracking-[0.3em] mb-6"
           >
             Private Events
           </motion.p>
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.4 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
             className="text-white font-serif text-4xl md:text-6xl lg:text-7xl tracking-tight max-w-4xl leading-[1.05]"
           >
             Celebrations that feel<br/>like a chapter, not<br/>a single evening.
@@ -41,20 +41,20 @@ export default function PrivateEvents() {
       <section className="py-32 px-6 md:px-12">
         <div className="max-w-3xl mx-auto text-center">
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
             className="font-serif text-3xl md:text-4xl leading-snug mb-8"
           >
             We have spent a decade designing the most personal moments in our
             clients' lives — quietly, and almost always behind closed doors.
           </motion.h2>
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
             className="text-foreground/70 leading-relaxed"
           >
             From milestone birthdays in private estates to multi-day yacht
@@ -70,10 +70,10 @@ export default function PrivateEvents() {
             {privateOfferings.map((item, i) => (
               <motion.div
                 key={item.title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: (i % 3) * 0.1 }}
+                transition={{ duration: 0.4, delay: (i % 3) * 0.07 }}
                 className="border-t border-border pt-8"
               >
                 <p className="text-xs uppercase tracking-[0.3em] text-primary mb-4">
@@ -92,10 +92,10 @@ export default function PrivateEvents() {
       <section className="py-32 px-6 md:px-12">
         <div className="container mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -16 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
           >
             <img
               src={scenes.privateAccent}
@@ -105,10 +105,10 @@ export default function PrivateEvents() {
             />
           </motion.div>
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
           >
             <p className="text-xs uppercase tracking-[0.3em] text-primary mb-6">
               The Approach
@@ -132,7 +132,7 @@ export default function PrivateEvents() {
             </p>
             <Link
               href="/inquiry"
-              className="inline-block border border-foreground text-foreground text-xs uppercase tracking-widest px-8 py-4 hover:bg-foreground hover:text-background transition-colors duration-500"
+              className="inline-block border border-foreground text-foreground text-xs uppercase tracking-widest px-8 py-4 hover:bg-foreground hover:text-background transition-colors duration-200"
             >
               Begin a Private Conversation
             </Link>
@@ -150,10 +150,10 @@ export default function PrivateEvents() {
               {privateProjects.map((project, i) => (
                 <motion.div
                   key={project.id}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: i * 0.15 }}
+                  transition={{ duration: 0.4, delay: i * 0.08 }}
                   className={`group ${i === 1 ? "md:mt-24" : ""}`}
                 >
                   <Link href={`/portfolio/${project.slug}`}>
@@ -161,7 +161,7 @@ export default function PrivateEvents() {
                       <img
                         src={project.image}
                         alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                       />
                     </div>
                     <h3 className="font-serif text-2xl mb-1">
@@ -184,7 +184,7 @@ export default function PrivateEvents() {
         </h2>
         <Link
           href="/inquiry"
-          className="inline-block border border-foreground text-foreground text-xs uppercase tracking-widest px-10 py-4 hover:bg-foreground hover:text-background transition-colors duration-500"
+          className="inline-block border border-foreground text-foreground text-xs uppercase tracking-widest px-10 py-4 hover:bg-foreground hover:text-background transition-colors duration-200"
         >
           Begin a Private Conversation
         </Link>

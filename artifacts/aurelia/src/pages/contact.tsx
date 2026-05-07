@@ -105,7 +105,7 @@ export default function Contact() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="text-center mb-16 md:mb-24 max-w-3xl mx-auto"
         >
           <div className="text-[11px] uppercase tracking-[0.3em] text-primary mb-4">
@@ -136,7 +136,7 @@ export default function Contact() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: i * 0.05 }}
+              transition={{ duration: 0.35, delay: i * 0.05 }}
               className="border border-border/70 p-7 md:p-8 bg-card flex flex-col"
             >
               <div className="text-[10px] uppercase tracking-[0.3em] text-primary mb-3">
@@ -172,7 +172,7 @@ export default function Contact() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.4 }}
           className="border-t border-border pt-16"
         >
           <div className="text-center mb-12">

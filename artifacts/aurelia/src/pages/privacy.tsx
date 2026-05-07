@@ -34,7 +34,7 @@ export default function Privacy() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.4 }}
           className="text-center mb-16"
         >
           <div className="text-[11px] uppercase tracking-[0.3em] text-primary mb-4">
@@ -55,7 +55,7 @@ export default function Privacy() {
               initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, delay: i * 0.05 }}
+              transition={{ duration: 0.35, delay: i * 0.05 }}
             >
               <div className="text-[11px] uppercase tracking-[0.25em] text-primary mb-3">
                 {String(i + 1).padStart(2, "0")}

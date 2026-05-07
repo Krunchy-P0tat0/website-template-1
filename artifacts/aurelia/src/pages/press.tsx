@@ -8,7 +8,7 @@ export default function Press() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.4 }}
           className="max-w-3xl mx-auto text-center mb-24"
         >
           <p className="text-xs uppercase tracking-[0.3em] text-primary mb-6">
@@ -40,7 +40,7 @@ export default function Press() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: 0.35 }}
                 className="text-center"
               >
                 <p className="font-serif text-2xl md:text-3xl text-foreground/70">
@@ -59,7 +59,7 @@ export default function Press() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: (i % 2) * 0.1 }}
+                transition={{ duration: 0.35, delay: (i % 2) * 0.1 }}
                 className="border-t border-border pt-8 group"
               >
                 <div className="flex items-center justify-between mb-4 text-xs uppercase tracking-[0.25em] text-foreground/50">

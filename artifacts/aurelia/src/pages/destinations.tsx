@@ -515,7 +515,7 @@ export default function Destinations() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1 }}
+          transition={{ duration: 0.4 }}
           className="max-w-4xl mx-auto text-center mb-20"
         >
           <div className="text-[11px] uppercase tracking-[0.3em] text-primary mb-6">
@@ -537,7 +537,7 @@ export default function Destinations() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="bg-muted/40 py-16 px-6 mb-16"
         >
           <h2 className="font-serif text-2xl md:text-3xl text-center mb-12 tracking-wide">
@@ -550,7 +550,7 @@ export default function Destinations() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.15 }}
+                transition={{ duration: 0.35, delay: i * 0.15 }}
                 className="text-center"
               >
                 <div className="bg-background w-44 h-44 mx-auto rounded-full flex flex-col items-center justify-center shadow-sm border border-border/40">
@@ -571,7 +571,7 @@ export default function Destinations() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="mb-24"
         >
           <h3 className="font-serif text-3xl md:text-4xl text-center mb-3 tracking-wide">
@@ -656,7 +656,7 @@ export default function Destinations() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
+          transition={{ duration: 0.4 }}
           className="max-w-5xl mx-auto"
         >
           <div className="text-center mb-12">
