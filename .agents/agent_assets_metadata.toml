@@ -1,0 +1,62 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "kv2q0N_9j-LhGxURHNeA-"
+uri = "file://artifacts/aurelia/public/images/hero-home.png"
+type = "image"
+title = "Cinematic Italian villa wedding hero"
+
+[[generated]]
+id = "IahS4b_aSkaArZOIOtI20"
+uri = "file://artifacts/aurelia/public/images/about-atelier.png"
+type = "image"
+title = "Atelier details for about page"
+
+[[generated]]
+id = "f-lxdBZrmLDzk8XtE7UlY"
+uri = "file://artifacts/aurelia/public/images/service-weddings.png"
+type = "image"
+title = "Weddings service hero"
+
+[[generated]]
+id = "w_RU2M0olps7ZuhF_QiUZ"
+uri = "file://artifacts/aurelia/public/images/service-corporate.png"
+type = "image"
+title = "Corporate gala hero"
+
+[[generated]]
+id = "801L6q2rRaiFgU5gxlE6z"
+uri = "file://artifacts/aurelia/public/images/service-private.png"
+type = "image"
+title = "Private events hero"
+
+[[generated]]
+id = "ekJHRIAD1FXqeR8gd_LBZ"
+uri = "file://artifacts/aurelia/public/images/service-destinations.png"
+type = "image"
+title = "Destinations hero"
+
+[[generated]]
+id = "2uToTOSrZC0JZnnrMFy6K"
+uri = "file://artifacts/aurelia/public/images/portfolio-como.png"
+type = "image"
+title = "Portfolio Lake Como"
+
+[[generated]]
+id = "VyJLj0Tn3d4dNFlY0poYK"
+uri = "file://artifacts/aurelia/public/images/portfolio-aspen.png"
+type = "image"
+title = "Portfolio Aspen"
+
+[[generated]]
+id = "C1hHSzTE36j28FJrPGEwo"
+uri = "file://artifacts/aurelia/public/images/portfolio-marrakech.png"
+type = "image"
+title = "Portfolio Marrakech"
+
+[[generated]]
+id = "f15ZZB4mUgktSZCuIpbdx"
+uri = "file://artifacts/aurelia/public/images/portfolio-tuscany.png"
+type = "image"
+title = "Portfolio Tuscany"

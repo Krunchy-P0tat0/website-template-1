@@ -1,0 +1,89 @@
+You are improving an EXISTING multi-page luxury travel/event website. Do NOT rebuild the project. Only refine, fix, and enhance current features.
+
+PRIMARY GOAL:
+Make the website feel like a premium luxury brand (high-end event planning aesthetic), improve UX flow, and connect existing components properly.
+
+---
+
+1. HERO SECTION IMPROVEMENT
+- Upgrade the homepage hero section to feel cinematic and premium
+- Add background video (desktop only) OR high-quality image fallback
+- Add dark overlay for readability
+- Center headline with strong typography hierarchy
+- Ensure mobile responsiveness:
+  - Disable video on mobile (max-width 768px)
+  - Replace with static image on mobile
+- Improve spacing and visual impact
+
+---
+
+2. INTERACTIVE MAP ENHANCEMENT (EXISTING FEATURE)
+- Improve existing map functionality (do NOT rebuild it)
+- When a user clicks a location on the map:
+  - Smooth scroll to matching destination section
+  - OR open the destination modal if available
+- Sync map interaction with URL hash (e.g. #italy)
+  - Auto-scroll to section
+  - Highlight matching destination card (gold border or glow effect)
+- Ensure mobile responsiveness and no layout breakage
+
+---
+
+3. DESTINATIONS SECTION UPGRADE
+- Improve grid layout to feel more premium and spacious
+- Add hover effects (zoom, fade, or subtle elevation)
+- Improve image presentation (larger, more cinematic feel)
+- Ensure layout stacks cleanly on mobile
+
+---
+
+4. NAVIGATION IMPROVEMENT
+- Convert navigation into responsive hamburger menu on mobile
+- Keep desktop navigation unchanged
+- Add active page highlighting
+- Ensure smooth open/close animation
+
+---
+
+5. FOOTER REDESIGN (LUXURY STRUCTURE)
+- Create structured 4-column footer:
+
+Column 1:
+- Brand name + tagline
+
+Column 2:
+- Vendor Applications
+- Internships
+- Careers
+
+Column 3:
+- Privacy Policy
+- Terms of Use
+- Social media icons
+
+Column 4:
+- Contact info + "Inquire Now" button
+
+- Ensure footer stacks properly on mobile
+
+---
+
+6. GLOBAL DESIGN IMPROVEMENTS
+- Increase whitespace between sections
+- Improve typography hierarchy (headings vs body text)
+- Ensure consistent spacing and alignment across all pages
+- Maintain clean luxury aesthetic (minimal, premium, spacious feel)
+
+---
+
+7. PERFORMANCE RULES
+- Do NOT introduce heavy libraries or frameworks
+- Do NOT break existing pages or remove content
+- Keep all changes lightweight and mobile-friendly
+- Ensure no console errors
+
+---
+
+OUTPUT:
+- Only show modified files or code sections
+- Do not rewrite the entire project
