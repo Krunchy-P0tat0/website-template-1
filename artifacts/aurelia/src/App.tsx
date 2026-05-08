@@ -1,4 +1,5 @@
-import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
+import { useState, useCallback } from "react";
+import { Switch, Route, Router as WouterRouter, useLocation, Redirect } from "wouter";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -8,6 +9,15 @@ import { Footer } from "@/components/layout/footer";
 import { NewsletterPopup } from "@/components/newsletter-popup";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { PageTitle } from "@/components/page-title";
+import {
+  AtelierAuthContext,
+  type AtelierAuthContextValue,
+  getToken,
+  saveToken,
+  clearToken,
+  atelierFetch,
+} from "@/lib/atelierAuth";
+import { AtelierLayout } from "@/components/atelier/layout";
 
 import Home from "@/pages/home";
 import About from "@/pages/about";
@@ -31,12 +41,23 @@ import Internships from "@/pages/internships";
 import Careers from "@/pages/careers";
 import NotFound from "@/pages/not-found";
 
+import AtelierLogin from "@/pages/atelier/login";
+import AtelierDashboard from "@/pages/atelier/dashboard";
+import AtelierInquiries from "@/pages/atelier/inquiries";
+import AtelierNewsletter from "@/pages/atelier/newsletter";
+import AtelierVendors from "@/pages/atelier/vendors";
+import AtelierInstagram from "@/pages/atelier/instagram-settings";
+import AtelierTelegram from "@/pages/atelier/telegram-settings";
+import AtelierSiteSettings from "@/pages/atelier/site-settings";
+
 const queryClient = new QueryClient();
 
-function Router() {
+// ── Public site ───────────────────────────────────────────────────────────────
+function PublicRouter() {
   const [location] = useLocation();
   const prefersReducedMotion = useReducedMotion();
   const fadeDuration = prefersReducedMotion ? 0 : 0.28;
+
   return (
     <div className="flex flex-col min-h-screen">
       <ScrollToTop />
@@ -83,12 +104,101 @@ function Router() {
   );
 }
 
+// ── Protected admin route ─────────────────────────────────────────────────────
+function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
+  const token = getToken();
+  if (!token) return <Redirect to="/atelier" />;
+  return (
+    <AtelierLayout>
+      <Component />
+    </AtelierLayout>
+  );
+}
+
+// ── Admin portal ──────────────────────────────────────────────────────────────
+function AtelierRouter() {
+  const [location] = useLocation();
+  const token = getToken();
+
+  // If already logged in and hitting /atelier root, redirect to dashboard
+  if (location === "/atelier" && token) {
+    return <Redirect to="/atelier/dashboard" />;
+  }
+
+  return (
+    <Switch location={location}>
+      <Route path="/atelier" component={AtelierLogin} />
+      <Route path="/atelier/dashboard">
+        <ProtectedRoute component={AtelierDashboard} />
+      </Route>
+      <Route path="/atelier/inquiries">
+        <ProtectedRoute component={AtelierInquiries} />
+      </Route>
+      <Route path="/atelier/newsletter">
+        <ProtectedRoute component={AtelierNewsletter} />
+      </Route>
+      <Route path="/atelier/vendors">
+        <ProtectedRoute component={AtelierVendors} />
+      </Route>
+      <Route path="/atelier/instagram">
+        <ProtectedRoute component={AtelierInstagram} />
+      </Route>
+      <Route path="/atelier/telegram">
+        <ProtectedRoute component={AtelierTelegram} />
+      </Route>
+      <Route path="/atelier/settings">
+        <ProtectedRoute component={AtelierSiteSettings} />
+      </Route>
+      <Route><Redirect to="/atelier" /></Route>
+    </Switch>
+  );
+}
+
+// ── Root router — splits admin vs public ─────────────────────────────────────
+function RootRouter() {
+  const [location] = useLocation();
+  const isAtelier = location === "/atelier" || location.startsWith("/atelier/");
+  return isAtelier ? <AtelierRouter /> : <PublicRouter />;
+}
+
+// ── Auth provider ─────────────────────────────────────────────────────────────
+function AtelierAuthProvider({ children }: { children: React.ReactNode }) {
+  const [token, setToken] = useState<string | null>(getToken);
+
+  const login = useCallback(async (email: string, password: string) => {
+    const data = await atelierFetch<{ token: string }>("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    });
+    saveToken(data.token);
+    setToken(data.token);
+  }, []);
+
+  const logout = useCallback(() => {
+    clearToken();
+    setToken(null);
+    window.location.href =
+      `${import.meta.env.BASE_URL}atelier`.replace(/\/\//g, "/");
+  }, []);
+
+  const value: AtelierAuthContextValue = { token, login, logout };
+
+  return (
+    <AtelierAuthContext.Provider value={value}>
+      {children}
+    </AtelierAuthContext.Provider>
+  );
+}
+
+// ── App root ──────────────────────────────────────────────────────────────────
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
+          <AtelierAuthProvider>
+            <RootRouter />
+          </AtelierAuthProvider>
         </WouterRouter>
         <Toaster />
       </TooltipProvider>
