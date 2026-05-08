@@ -6,28 +6,42 @@ import { sendTelegramMessage, formatNotification } from "../lib/telegram";
 
 const router: IRouter = Router();
 
+const safeUrl = z
+  .string()
+  .max(500)
+  .refine(
+    (val) => {
+      try {
+        const u = new URL(val);
+        return u.protocol === "https:" || u.protocol === "http:";
+      } catch {
+        return false;
+      }
+    },
+    { message: "Must be a valid URL (http or https)" },
+  )
+  .optional()
+  .nullable();
+
 const vendorBodySchema = z.object({
   businessName: z.string().min(1).max(180),
   contactName: z.string().min(1).max(180),
   email: z.string().email().max(255),
   phone: z.string().max(64).optional().nullable(),
-  website: z.string().max(255).optional().nullable(),
+  website: safeUrl,
   instagram: z.string().max(120).optional().nullable(),
   category: z.string().min(1).max(80),
   regions: z.string().min(1).max(255),
   yearsActive: z.string().max(40).optional().nullable(),
   bio: z.string().min(20).max(3000),
-  portfolioUrl: z.string().max(500).optional().nullable(),
+  portfolioUrl: safeUrl,
   hearAboutUs: z.string().max(255).optional().nullable(),
 });
 
 router.post("/vendor-applications", async (req, res) => {
   const parsed = vendorBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({
-      error: "Invalid submission",
-      issues: parsed.error.issues,
-    });
+    return res.status(400).json({ error: "Invalid submission" });
   }
 
   const data = parsed.data;
