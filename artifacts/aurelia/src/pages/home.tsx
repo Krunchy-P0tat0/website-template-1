@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { portfolioProjects } from "@/lib/data";
 import { scenes } from "@/lib/realPhotos";
+import SocialFeed from "@/components/social-feed";
 
 export default function Home() {
   return (
@@ -179,6 +180,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <SocialFeed />
     </div>
   );
 }
