@@ -9,8 +9,8 @@ import { adminLimiter } from "../lib/rateLimiter";
 const router: IRouter = Router();
 
 const loginSchema = z.object({
-  email: z.string().email().max(255),
-  password: z.string().min(1).max(255),
+  email: z.string().trim().email().max(255),
+  password: z.string().trim().min(1).max(255),
 });
 
 // ── POST /api/atelier/auth/login ─────────────────────────────────────────────
@@ -31,7 +31,7 @@ router.post("/atelier/auth/login", adminLimiter, (req, res) => {
 
   const { email, password } = parsed.data;
 
-  if (email !== adminEmail || password !== adminPassword) {
+  if (email.trim() !== adminEmail.trim() || password !== adminPassword.trim()) {
     logger.warn({ email }, "Atelier login: invalid credentials attempt");
     return res.status(401).json({ error: "Invalid credentials" });
   }
