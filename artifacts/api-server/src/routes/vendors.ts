@@ -3,6 +3,7 @@ import { db, vendorApplicationsTable } from "@workspace/db";
 import { z } from "zod/v4";
 import { logger } from "../lib/logger";
 import { sendTelegramMessage, formatNotification } from "../lib/telegram";
+import { vendorLimiter } from "../lib/rateLimiter";
 
 const router: IRouter = Router();
 
@@ -38,7 +39,7 @@ const vendorBodySchema = z.object({
   hearAboutUs: z.string().max(255).optional().nullable(),
 });
 
-router.post("/vendor-applications", async (req, res) => {
+router.post("/vendor-applications", vendorLimiter, async (req, res) => {
   const parsed = vendorBodySchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: "Invalid submission" });

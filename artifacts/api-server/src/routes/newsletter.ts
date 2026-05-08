@@ -3,6 +3,7 @@ import { db, newsletterTable } from "@workspace/db";
 import { z } from "zod/v4";
 import { logger } from "../lib/logger";
 import { sendTelegramMessage, formatNotification } from "../lib/telegram";
+import { newsletterLimiter } from "../lib/rateLimiter";
 
 const router: IRouter = Router();
 
@@ -11,13 +12,10 @@ const newsletterBodySchema = z.object({
   source: z.string().max(80).optional(),
 });
 
-router.post("/newsletter", async (req, res) => {
+router.post("/newsletter", newsletterLimiter, async (req, res) => {
   const parsed = newsletterBodySchema.safeParse(req.body);
   if (!parsed.success) {
-    return res.status(400).json({
-      error: "Invalid email",
-      issues: parsed.error.issues,
-    });
+    return res.status(400).json({ error: "Invalid email" });
   }
 
   const { email, source } = parsed.data;

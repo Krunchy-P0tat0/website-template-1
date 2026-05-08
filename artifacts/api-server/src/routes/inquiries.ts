@@ -4,6 +4,7 @@ import { desc } from "drizzle-orm";
 import { z } from "zod/v4";
 import { logger } from "../lib/logger";
 import { sendTelegramMessage, formatNotification } from "../lib/telegram";
+import { inquiryLimiter, adminLimiter } from "../lib/rateLimiter";
 
 const router: IRouter = Router();
 
@@ -25,7 +26,7 @@ const inquiryBodySchema = insertInquirySchema.extend({
   hearAboutUs: z.string().max(255).optional().nullable(),
 });
 
-router.post("/inquiries", async (req, res) => {
+router.post("/inquiries", inquiryLimiter, async (req, res) => {
   const parsed = inquiryBodySchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ error: "Invalid submission" });
@@ -72,7 +73,7 @@ router.post("/inquiries", async (req, res) => {
   }
 });
 
-router.get("/inquiries", async (req, res) => {
+router.get("/inquiries", adminLimiter, async (req, res) => {
   const adminToken = process.env["ADMIN_TOKEN"];
   if (!adminToken) {
     return res.status(503).json({ error: "Admin disabled. Set ADMIN_TOKEN secret to enable." });
