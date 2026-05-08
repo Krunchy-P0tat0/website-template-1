@@ -33,33 +33,38 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-transparent to-black/10" />
         </div>
 
-        <div className="relative z-10 text-center px-6">
+        <div className="relative z-10 text-center px-6 max-w-5xl mx-auto flex flex-col items-center gap-10">
           <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="text-white/75 text-xs uppercase tracking-[0.35em] mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-white/60 text-[10px] uppercase tracking-[0.45em]"
           >
-            New York · Los Angeles · Miami · Florence
+            New York &nbsp;·&nbsp; Los Angeles &nbsp;·&nbsp; Miami &nbsp;·&nbsp; Florence
           </motion.p>
+
           <motion.h1
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="text-white font-serif text-5xl md:text-7xl lg:text-8xl tracking-tight mb-10 leading-[1.05]"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.9, delay: 0.4 }}
+            className="text-white font-serif text-[clamp(2.8rem,8vw,6.5rem)] leading-[1.04] tracking-[-0.01em]"
           >
-            The Art of<br/>Celebration
+            The Art of<br />Celebration
           </motion.h1>
+
           <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.65 }}
+            className="flex flex-col items-center gap-6"
           >
+            <div className="w-px h-10 bg-white/25" />
             <Link
               href="/inquiry"
-              className="inline-block border border-white/40 text-white text-xs uppercase tracking-widest px-10 py-4 hover:bg-white hover:text-black transition-colors duration-200 backdrop-blur-[2px]"
+              className="group relative inline-flex items-center gap-3 border border-white/30 text-white/90 text-[10px] uppercase tracking-[0.3em] px-12 py-[14px] overflow-hidden transition-colors duration-300 hover:border-white/70 hover:text-white"
             >
-              Inquire Now
+              <span className="absolute inset-0 bg-white/0 group-hover:bg-white/8 transition-colors duration-300" />
+              <span className="relative">Inquire Now</span>
             </Link>
           </motion.div>
         </div>
