@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { z } from "zod/v4";
 import { db, inquiriesTable, newsletterTable, vendorApplicationsTable } from "@workspace/db";
-import { desc } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { signAtelierToken, requireAtelierAuth } from "../lib/atelierAuth";
 import { adminLimiter } from "../lib/rateLimiter";
@@ -58,6 +58,44 @@ router.get("/atelier/inquiries", requireAtelierAuth, async (_req, res) => {
   } catch (err) {
     logger.error({ err }, "Atelier: failed to fetch inquiries");
     return res.status(500).json({ error: "Could not retrieve inquiries" });
+  }
+});
+
+// ── PATCH /api/atelier/inquiries/:id ─────────────────────────────────────────
+const patchInquirySchema = z.object({
+  status: z.enum(["new", "contacted", "consultation_scheduled", "closed"]).optional(),
+  notes: z.string().max(50000).optional(),
+});
+
+router.patch("/atelier/inquiries/:id", requireAtelierAuth, async (req, res) => {
+  const id = parseInt(req.params["id"] as string, 10);
+  if (isNaN(id)) return res.status(400).json({ error: "Invalid ID" });
+
+  const parsed = patchInquirySchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "Invalid data" });
+
+  const { status, notes } = parsed.data;
+
+  if (status === undefined && notes === undefined) {
+    return res.status(400).json({ error: "Nothing to update" });
+  }
+
+  const updates: Partial<{ status: string; notes: string }> = {};
+  if (status !== undefined) updates.status = status;
+  if (notes !== undefined) updates.notes = notes;
+
+  try {
+    const [row] = await db
+      .update(inquiriesTable)
+      .set(updates)
+      .where(eq(inquiriesTable.id, id))
+      .returning();
+
+    if (!row) return res.status(404).json({ error: "Not found" });
+    return res.json({ inquiry: row });
+  } catch (err) {
+    logger.error({ err }, "Atelier: failed to update inquiry");
+    return res.status(500).json({ error: "Could not update inquiry" });
   }
 });
 

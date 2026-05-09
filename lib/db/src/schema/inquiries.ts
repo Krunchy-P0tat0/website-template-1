@@ -19,6 +19,8 @@ export const inquiriesTable = pgTable("inquiries", {
   phone: text("phone").notNull(),
   additional: text("additional"),
   hearAboutUs: text("hear_about_us"),
+  status: text("status").default("new").notNull(),
+  notes: text("notes"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
