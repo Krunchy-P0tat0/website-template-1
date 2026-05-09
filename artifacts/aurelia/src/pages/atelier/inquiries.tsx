@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from "react";
-import { Search, X, ChevronRight, Trash2, Plus } from "lucide-react";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import { Search, X, ChevronRight, Trash2, Plus, RotateCcw } from "lucide-react";
 import { atelierFetch } from "@/lib/atelierAuth";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -79,9 +79,7 @@ function parseNotes(raw: string | null): Note[] {
 function StatusBadge({ status }: { status: InquiryStatus }) {
   const cfg = STATUS_CONFIG[status] ?? STATUS_CONFIG.new;
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.15em] border rounded-full whitespace-nowrap font-medium ${cfg.badge}`}
-    >
+    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.15em] border rounded-full whitespace-nowrap font-medium ${cfg.badge}`}>
       <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${cfg.dot}`} />
       {cfg.label}
     </span>
@@ -102,6 +100,55 @@ function Field({ label, value }: { label: string; value: string | number | null 
     <div>
       <dt className="text-[10px] uppercase tracking-[0.2em] text-foreground/35 mb-0.5">{label}</dt>
       <dd className="text-sm text-foreground/75 leading-relaxed">{String(value)}</dd>
+    </div>
+  );
+}
+
+// ── Empty / Error states ──────────────────────────────────────────────────────
+
+function Ornament() {
+  return (
+    <div className="flex items-center justify-center gap-3 mb-6">
+      <span className="flex-1 h-px bg-[#e8e5df] max-w-[60px]" />
+      <span className="text-[#d4cfc8] text-sm">◇</span>
+      <span className="flex-1 h-px bg-[#e8e5df] max-w-[60px]" />
+    </div>
+  );
+}
+
+function EmptyState({ title, description }: { title: string; description: string }) {
+  return (
+    <div className="bg-white border border-[#e8e5df] p-16 text-center">
+      <Ornament />
+      <p className="font-serif text-xl text-foreground/40 mb-2">{title}</p>
+      <p className="text-xs text-foreground/30 leading-relaxed max-w-xs mx-auto">{description}</p>
+    </div>
+  );
+}
+
+function ErrorState({ onRetry }: { onRetry: () => void }) {
+  return (
+    <div className="bg-white border border-[#e8e5df] p-16 text-center">
+      <Ornament />
+      <p className="font-serif text-xl text-foreground/40 mb-2">Unable to retrieve inquiries</p>
+      <p className="text-xs text-foreground/30 leading-relaxed max-w-xs mx-auto mb-8">
+        Something prevented the data from loading. Please try again.
+      </p>
+      <button
+        onClick={onRetry}
+        className="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest border border-[#e8e5df] px-4 py-2.5 text-foreground/40 hover:border-foreground/20 hover:text-foreground/70 transition-colors"
+      >
+        <RotateCcw className="w-3 h-3" />
+        Try again
+      </button>
+    </div>
+  );
+}
+
+function LoadingState() {
+  return (
+    <div className="bg-white border border-[#e8e5df] p-16 text-center">
+      <p className="text-[10px] uppercase tracking-[0.3em] text-foreground/25">Loading…</p>
     </div>
   );
 }
@@ -171,10 +218,7 @@ function InquiryDetail({
 
   return (
     <>
-      <div
-        className="fixed inset-0 z-40 bg-black/25 backdrop-blur-[2px]"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 z-40 bg-black/25 backdrop-blur-[2px]" onClick={onClose} />
 
       <div className="fixed inset-y-0 right-0 z-50 w-full max-w-[520px] bg-white shadow-2xl flex flex-col">
         {/* Header */}
@@ -369,18 +413,22 @@ function InquiryDetail({
 export default function AtelierInquiries() {
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(false);
   const [search, setSearch] = useState("");
   const [serviceFilter, setServiceFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [selected, setSelected] = useState<Inquiry | null>(null);
 
-  useEffect(() => {
+  const fetchInquiries = useCallback(() => {
+    setLoading(true);
+    setError(false);
     atelierFetch<{ inquiries: Inquiry[] }>("/inquiries")
       .then((d) => setInquiries(d.inquiries))
-      .catch((e: Error) => setError(e.message))
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => { fetchInquiries(); }, [fetchInquiries]);
 
   const services = useMemo(() => {
     return Array.from(new Set(inquiries.map((i) => i.service))).sort();
@@ -419,7 +467,7 @@ export default function AtelierInquiries() {
           <p className="text-[10px] uppercase tracking-[0.3em] text-foreground/40 mb-1">Submissions</p>
           <h2 className="font-serif text-2xl text-foreground/80">Client Inquiries</h2>
         </div>
-        {!loading && !error && (
+        {!loading && !error && inquiries.length > 0 && (
           <span className="text-xs text-foreground/40 tracking-widest">
             {filtered.length !== inquiries.length
               ? `${filtered.length} of ${inquiries.length}`
@@ -449,37 +497,17 @@ export default function AtelierInquiries() {
               </button>
             )}
           </div>
-          <select
-            value={serviceFilter}
-            onChange={(e) => setServiceFilter(e.target.value)}
-            className={controlSelect}
-          >
+          <select value={serviceFilter} onChange={(e) => setServiceFilter(e.target.value)} className={controlSelect}>
             <option value="all">All Services</option>
-            {services.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
+            {services.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className={controlSelect}
-          >
+          <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className={controlSelect}>
             <option value="all">All Statuses</option>
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>
-                {STATUS_CONFIG[s].label}
-              </option>
-            ))}
+            {STATUSES.map((s) => <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>)}
           </select>
           {(search || serviceFilter !== "all" || statusFilter !== "all") && (
             <button
-              onClick={() => {
-                setSearch("");
-                setServiceFilter("all");
-                setStatusFilter("all");
-              }}
+              onClick={() => { setSearch(""); setServiceFilter("all"); setStatusFilter("all"); }}
               className="text-[10px] uppercase tracking-widest text-foreground/40 hover:text-foreground/70 border border-[#e8e5df] px-3 py-2 rounded transition-colors"
             >
               Clear
@@ -489,36 +517,23 @@ export default function AtelierInquiries() {
       )}
 
       {/* States */}
-      {loading && (
-        <div className="bg-white border border-[#e8e5df] p-12 text-center rounded">
-          <p className="text-xs uppercase tracking-widest text-foreground/30">Loading…</p>
-        </div>
-      )}
-
-      {error && (
-        <div className="bg-white border border-red-200 p-6 rounded">
-          <p className="text-xs text-red-500">{error}</p>
-        </div>
-      )}
-
+      {loading && <LoadingState />}
+      {!loading && error && <ErrorState onRetry={fetchInquiries} />}
       {!loading && !error && inquiries.length === 0 && (
-        <div className="bg-white border border-[#e8e5df] p-16 text-center rounded">
-          <p className="text-xs uppercase tracking-widest text-foreground/30">No inquiries yet</p>
-        </div>
+        <EmptyState
+          title="No inquiries on record"
+          description="Client submissions from the public site will appear here once received."
+        />
       )}
-
       {!loading && !error && filtered.length === 0 && inquiries.length > 0 && (
-        <div className="bg-white border border-[#e8e5df] p-12 text-center rounded">
-          <p className="text-xs uppercase tracking-widest text-foreground/30 mb-3">No results</p>
+        <div className="bg-white border border-[#e8e5df] p-12 text-center">
+          <p className="font-serif text-lg text-foreground/40 mb-2">No matching results</p>
+          <p className="text-xs text-foreground/30 mb-6">Try adjusting your search or filters.</p>
           <button
-            onClick={() => {
-              setSearch("");
-              setServiceFilter("all");
-              setStatusFilter("all");
-            }}
-            className="text-xs text-foreground/40 underline hover:text-foreground/60 transition-colors"
+            onClick={() => { setSearch(""); setServiceFilter("all"); setStatusFilter("all"); }}
+            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest border border-[#e8e5df] px-4 py-2 text-foreground/40 hover:border-foreground/20 hover:text-foreground/70 transition-colors"
           >
-            Clear filters
+            Clear all filters
           </button>
         </div>
       )}
@@ -530,22 +545,8 @@ export default function AtelierInquiries() {
             <table className="w-full text-xs">
               <thead>
                 <tr className="border-b border-[#e8e5df] bg-[#f7f6f3]">
-                  {[
-                    "Name",
-                    "Email",
-                    "Phone",
-                    "Service",
-                    "Event Date",
-                    "Guests",
-                    "Location",
-                    "Status",
-                    "Submitted",
-                    "",
-                  ].map((h) => (
-                    <th
-                      key={h}
-                      className="text-left px-4 py-3 text-[10px] uppercase tracking-[0.2em] text-foreground/40 font-normal whitespace-nowrap"
-                    >
+                  {["Name", "Email", "Phone", "Service", "Event Date", "Guests", "Location", "Status", "Submitted", ""].map((h) => (
+                    <th key={h} className="text-left px-4 py-3 text-[10px] uppercase tracking-[0.2em] text-foreground/40 font-normal whitespace-nowrap">
                       {h}
                     </th>
                   ))}
@@ -561,33 +562,17 @@ export default function AtelierInquiries() {
                     <td className="px-4 py-3 whitespace-nowrap font-medium text-foreground/80">
                       {inq.firstName} {inq.lastName}
                     </td>
-                    <td className="px-4 py-3 text-foreground/55 max-w-[200px] truncate">
-                      {inq.email}
-                    </td>
-                    <td className="px-4 py-3 text-foreground/55 whitespace-nowrap">
-                      {inq.phone}
-                    </td>
-                    <td className="px-4 py-3 text-foreground/55 whitespace-nowrap">
-                      {inq.service}
-                    </td>
-                    <td className="px-4 py-3 text-foreground/55 whitespace-nowrap">
-                      {inq.eventDate}
-                    </td>
-                    <td className="px-4 py-3 text-foreground/55 text-center">
-                      {inq.guests}
-                    </td>
-                    <td className="px-4 py-3 text-foreground/55 max-w-[140px] truncate">
-                      {inq.location}
-                    </td>
+                    <td className="px-4 py-3 text-foreground/55 max-w-[200px] truncate">{inq.email}</td>
+                    <td className="px-4 py-3 text-foreground/55 whitespace-nowrap">{inq.phone}</td>
+                    <td className="px-4 py-3 text-foreground/55 whitespace-nowrap">{inq.service}</td>
+                    <td className="px-4 py-3 text-foreground/55 whitespace-nowrap">{inq.eventDate}</td>
+                    <td className="px-4 py-3 text-foreground/55 text-center">{inq.guests}</td>
+                    <td className="px-4 py-3 text-foreground/55 max-w-[140px] truncate">{inq.location}</td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <StatusBadge status={inq.status ?? "new"} />
                     </td>
                     <td className="px-4 py-3 text-foreground/40 whitespace-nowrap">
-                      {new Date(inq.createdAt).toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                      })}
+                      {new Date(inq.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </td>
                     <td className="px-4 py-3">
                       <ChevronRight className="w-3.5 h-3.5 text-foreground/20 group-hover:text-foreground/50 transition-colors" />
