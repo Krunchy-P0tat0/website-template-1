@@ -1,10 +1,11 @@
 import { Router, type IRouter } from "express";
 import { z } from "zod/v4";
-import { db, inquiriesTable, newsletterTable, vendorApplicationsTable } from "@workspace/db";
+import { db, inquiriesTable, newsletterTable, vendorApplicationsTable, siteSettingsTable } from "@workspace/db";
 import { desc, eq } from "drizzle-orm";
 import { logger } from "../lib/logger";
 import { signAtelierToken, requireAtelierAuth } from "../lib/atelierAuth";
 import { adminLimiter } from "../lib/rateLimiter";
+import { sendTelegramMessage, formatNotification } from "../lib/telegram";
 
 const router: IRouter = Router();
 
@@ -44,6 +45,91 @@ router.post("/atelier/auth/login", adminLimiter, (req, res) => {
 // ── GET /api/atelier/auth/verify ─────────────────────────────────────────────
 router.get("/atelier/auth/verify", requireAtelierAuth, (_req, res) => {
   return res.json({ ok: true });
+});
+
+// ── GET /api/atelier/config ───────────────────────────────────────────────────
+router.get("/atelier/config", requireAtelierAuth, async (_req, res) => {
+  const botConfigured = !!process.env["TELEGRAM_BOT_TOKEN"];
+  const chatConfigured = !!process.env["TELEGRAM_CHAT_ID"];
+  const instagramTokenConfigured = !!process.env["INSTAGRAM_ACCESS_TOKEN"];
+
+  try {
+    const rows = await db.select().from(siteSettingsTable);
+    const s = Object.fromEntries(rows.map((r) => [r.key, r.value]));
+
+    return res.json({
+      telegram: {
+        botConfigured,
+        chatConfigured,
+        active: botConfigured && chatConfigured,
+      },
+      instagram: {
+        tokenConfigured: instagramTokenConfigured,
+        feedEnabled: s["instagram_feed_enabled"] !== "false",
+        handle: s["instagram_handle"] ?? "@aureliaandco",
+        profileUrl: s["instagram_profile_url"] ?? "https://instagram.com/aureliaandco",
+      },
+    });
+  } catch (err) {
+    logger.error({ err }, "Atelier: failed to fetch config");
+    return res.status(500).json({ error: "Could not load config" });
+  }
+});
+
+// ── PATCH /api/atelier/settings/instagram ────────────────────────────────────
+const instagramSettingsSchema = z.object({
+  handle: z.string().max(120).optional(),
+  profileUrl: z.string().max(255).optional(),
+  feedEnabled: z.boolean().optional(),
+});
+
+router.patch("/atelier/settings/instagram", requireAtelierAuth, async (req, res) => {
+  const parsed = instagramSettingsSchema.safeParse(req.body);
+  if (!parsed.success) return res.status(400).json({ error: "Invalid data" });
+
+  const { handle, profileUrl, feedEnabled } = parsed.data;
+
+  const updates: Array<{ key: string; value: string }> = [];
+  if (handle !== undefined) updates.push({ key: "instagram_handle", value: handle });
+  if (profileUrl !== undefined) updates.push({ key: "instagram_profile_url", value: profileUrl });
+  if (feedEnabled !== undefined) updates.push({ key: "instagram_feed_enabled", value: String(feedEnabled) });
+
+  if (updates.length === 0) return res.status(400).json({ error: "Nothing to update" });
+
+  try {
+    for (const u of updates) {
+      await db
+        .insert(siteSettingsTable)
+        .values({ key: u.key, value: u.value })
+        .onConflictDoUpdate({
+          target: siteSettingsTable.key,
+          set: { value: u.value, updatedAt: new Date() },
+        });
+    }
+    return res.json({ updated: true });
+  } catch (err) {
+    logger.error({ err }, "Atelier: failed to update Instagram settings");
+    return res.status(500).json({ error: "Could not update settings" });
+  }
+});
+
+// ── POST /api/atelier/telegram/test ──────────────────────────────────────────
+router.post("/atelier/telegram/test", requireAtelierAuth, adminLimiter, async (_req, res) => {
+  if (!process.env["TELEGRAM_BOT_TOKEN"] || !process.env["TELEGRAM_CHAT_ID"]) {
+    return res.status(503).json({ error: "Telegram not configured. Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID." });
+  }
+
+  const message = formatNotification("Test Notification — Aurelia & Co.", [
+    { label: "Status", value: "Connected and operational" },
+    { label: "Sent at", value: new Date().toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }) },
+  ]);
+
+  const sent = await sendTelegramMessage(message);
+  if (sent) {
+    logger.info("Atelier: test Telegram notification sent");
+    return res.json({ sent: true });
+  }
+  return res.status(502).json({ error: "Failed to deliver message. Check TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID." });
 });
 
 // ── GET /api/atelier/inquiries ───────────────────────────────────────────────
