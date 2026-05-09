@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import { Search, X, ChevronRight, Trash2, Plus, RotateCcw } from "lucide-react";
+import { Search, X, ChevronRight, Trash2, Plus, RotateCcw, Download } from "lucide-react";
 import { atelierFetch } from "@/lib/atelierAuth";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -65,15 +65,33 @@ const STATUS_CONFIG: Record<InquiryStatus, { label: string; badge: string; dot: 
 
 const STATUSES: InquiryStatus[] = ["new", "contacted", "consultation_scheduled", "closed"];
 
+// ── CSV export ────────────────────────────────────────────────────────────────
+
+function downloadCsv(filename: string, rows: Record<string, unknown>[]) {
+  if (!rows.length) return;
+  const keys = Object.keys(rows[0]);
+  const esc = (v: unknown) => {
+    const s = String(v ?? "");
+    return s.includes(",") || s.includes('"') || s.includes("\n")
+      ? `"${s.replace(/"/g, '""')}"`
+      : s;
+  };
+  const csv = [keys.join(","), ...rows.map((r) => keys.map((k) => esc(r[k])).join(","))].join("\n");
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function parseNotes(raw: string | null): Note[] {
   if (!raw) return [];
-  try {
-    return JSON.parse(raw) as Note[];
-  } catch {
-    return [];
-  }
+  try { return JSON.parse(raw) as Note[]; } catch { return []; }
 }
 
 function StatusBadge({ status }: { status: InquiryStatus }) {
@@ -104,7 +122,7 @@ function Field({ label, value }: { label: string; value: string | number | null 
   );
 }
 
-// ── Empty / Error states ──────────────────────────────────────────────────────
+// ── Empty / error states ──────────────────────────────────────────────────────
 
 function Ornament() {
   return (
@@ -116,12 +134,14 @@ function Ornament() {
   );
 }
 
-function EmptyState({ title, description }: { title: string; description: string }) {
+function EmptyState() {
   return (
     <div className="bg-white border border-[#e8e5df] p-16 text-center">
       <Ornament />
-      <p className="font-serif text-xl text-foreground/40 mb-2">{title}</p>
-      <p className="text-xs text-foreground/30 leading-relaxed max-w-xs mx-auto">{description}</p>
+      <p className="font-serif text-xl text-foreground/40 mb-2">No inquiries on record</p>
+      <p className="text-xs text-foreground/30 leading-relaxed max-w-xs mx-auto">
+        Client submissions from the public site will appear here once received.
+      </p>
     </div>
   );
 }
@@ -145,21 +165,9 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-function LoadingState() {
-  return (
-    <div className="bg-white border border-[#e8e5df] p-16 text-center">
-      <p className="text-[10px] uppercase tracking-[0.3em] text-foreground/25">Loading…</p>
-    </div>
-  );
-}
-
 // ── Detail panel ──────────────────────────────────────────────────────────────
 
-function InquiryDetail({
-  inquiry: initial,
-  onClose,
-  onUpdate,
-}: {
+function InquiryDetail({ inquiry: initial, onClose, onUpdate }: {
   inquiry: Inquiry;
   onClose: () => void;
   onUpdate: (inq: Inquiry) => void;
@@ -168,7 +176,6 @@ function InquiryDetail({
   const [noteText, setNoteText] = useState("");
   const [savingStatus, setSavingStatus] = useState(false);
   const [savingNote, setSavingNote] = useState(false);
-
   const notes = parseNotes(inquiry.notes);
 
   async function patchInquiry(body: { status?: InquiryStatus; notes?: string }) {
@@ -184,34 +191,22 @@ function InquiryDetail({
   async function handleStatusChange(status: InquiryStatus) {
     if (status === inquiry.status || savingStatus) return;
     setSavingStatus(true);
-    try {
-      await patchInquiry({ status });
-    } catch { /* noop */ } finally {
-      setSavingStatus(false);
-    }
+    try { await patchInquiry({ status }); } catch { /**/ } finally { setSavingStatus(false); }
   }
 
   async function handleAddNote() {
     const text = noteText.trim();
     if (!text || savingNote) return;
     setSavingNote(true);
-    const newNote: Note = {
-      id: crypto.randomUUID(),
-      text,
-      createdAt: new Date().toISOString(),
-    };
+    const newNote: Note = { id: crypto.randomUUID(), text, createdAt: new Date().toISOString() };
     try {
       await patchInquiry({ notes: JSON.stringify([...notes, newNote]) });
       setNoteText("");
-    } catch { /* noop */ } finally {
-      setSavingNote(false);
-    }
+    } catch { /**/ } finally { setSavingNote(false); }
   }
 
-  async function handleDeleteNote(noteId: string) {
-    try {
-      await patchInquiry({ notes: JSON.stringify(notes.filter((n) => n.id !== noteId)) });
-    } catch { /* noop */ }
+  async function handleDeleteNote(id: string) {
+    try { await patchInquiry({ notes: JSON.stringify(notes.filter((n) => n.id !== id)) }); } catch { /**/ }
   }
 
   const yesNo = (v: string) => (v === "yes" ? "Yes" : "No");
@@ -219,39 +214,22 @@ function InquiryDetail({
   return (
     <>
       <div className="fixed inset-0 z-40 bg-black/25 backdrop-blur-[2px]" onClick={onClose} />
-
       <div className="fixed inset-y-0 right-0 z-50 w-full max-w-[520px] bg-white shadow-2xl flex flex-col">
-        {/* Header */}
         <div className="flex items-start justify-between px-6 py-5 border-b border-[#e8e5df] shrink-0">
           <div className="min-w-0 pr-4">
             <p className="text-[10px] uppercase tracking-[0.3em] text-foreground/35 mb-1">
               Inquiry #{inquiry.id} &mdash;{" "}
-              {new Date(inquiry.createdAt).toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-                year: "numeric",
-              })}
+              {new Date(inquiry.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
             </p>
-            <h2 className="font-serif text-xl text-foreground/80 truncate">
-              {inquiry.firstName} {inquiry.lastName}
-            </h2>
-            <div className="mt-2">
-              <StatusBadge status={inquiry.status ?? "new"} />
-            </div>
+            <h2 className="font-serif text-xl text-foreground/80 truncate">{inquiry.firstName} {inquiry.lastName}</h2>
+            <div className="mt-2"><StatusBadge status={inquiry.status ?? "new"} /></div>
           </div>
-          <button
-            onClick={onClose}
-            className="text-foreground/30 hover:text-foreground/70 transition-colors p-1 shrink-0 mt-0.5"
-            aria-label="Close"
-          >
+          <button onClick={onClose} className="text-foreground/30 hover:text-foreground/70 transition-colors p-1 shrink-0 mt-0.5" aria-label="Close">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Scrollable content */}
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-6">
-
-          {/* Client */}
           <section>
             <SectionLabel>Client</SectionLabel>
             <dl className="grid grid-cols-1 gap-3">
@@ -259,22 +237,11 @@ function InquiryDetail({
               <Field label="Phone" value={inquiry.phone} />
             </dl>
             <div className="flex gap-3 mt-3">
-              <a
-                href={`mailto:${inquiry.email}`}
-                className="flex-1 text-center text-[10px] uppercase tracking-widest border border-[#e8e5df] py-2 text-foreground/50 hover:border-foreground/20 hover:text-foreground/80 transition-colors"
-              >
-                Send Email
-              </a>
-              <a
-                href={`tel:${inquiry.phone}`}
-                className="flex-1 text-center text-[10px] uppercase tracking-widest border border-[#e8e5df] py-2 text-foreground/50 hover:border-foreground/20 hover:text-foreground/80 transition-colors"
-              >
-                Call
-              </a>
+              <a href={`mailto:${inquiry.email}`} className="flex-1 text-center text-[10px] uppercase tracking-widest border border-[#e8e5df] py-2 text-foreground/50 hover:border-foreground/20 hover:text-foreground/80 transition-colors">Send Email</a>
+              <a href={`tel:${inquiry.phone}`} className="flex-1 text-center text-[10px] uppercase tracking-widest border border-[#e8e5df] py-2 text-foreground/50 hover:border-foreground/20 hover:text-foreground/80 transition-colors">Call</a>
             </div>
           </section>
 
-          {/* Event */}
           <section>
             <SectionLabel>Event Details</SectionLabel>
             <dl className="grid grid-cols-2 gap-x-6 gap-y-3">
@@ -290,7 +257,6 @@ function InquiryDetail({
             </dl>
           </section>
 
-          {/* Additional */}
           {(inquiry.hearAboutUs || inquiry.additional) && (
             <section>
               <SectionLabel>Additional</SectionLabel>
@@ -298,19 +264,14 @@ function InquiryDetail({
                 <Field label="How they found us" value={inquiry.hearAboutUs} />
                 {inquiry.additional && (
                   <div>
-                    <dt className="text-[10px] uppercase tracking-[0.2em] text-foreground/35 mb-1">
-                      Notes from client
-                    </dt>
-                    <dd className="text-sm text-foreground/70 bg-[#f7f6f3] border border-[#ede9e3] px-3 py-2.5 rounded leading-relaxed">
-                      {inquiry.additional}
-                    </dd>
+                    <dt className="text-[10px] uppercase tracking-[0.2em] text-foreground/35 mb-1">Notes from client</dt>
+                    <dd className="text-sm text-foreground/70 bg-[#f7f6f3] border border-[#ede9e3] px-3 py-2.5 rounded leading-relaxed">{inquiry.additional}</dd>
                   </div>
                 )}
               </dl>
             </section>
           )}
 
-          {/* Status */}
           <section>
             <SectionLabel>Status</SectionLabel>
             <div className="flex flex-wrap gap-2">
@@ -323,10 +284,8 @@ function InquiryDetail({
                     disabled={savingStatus}
                     onClick={() => handleStatusChange(s)}
                     className={`px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] border rounded-full transition-all duration-150
-                      ${active
-                        ? cfg.btn + " font-semibold ring-1 ring-offset-1 ring-current/20"
-                        : "bg-white text-foreground/40 border-[#e8e5df] hover:border-foreground/20 hover:text-foreground/60"
-                      } disabled:opacity-40 disabled:cursor-not-allowed`}
+                      ${active ? cfg.btn + " font-semibold ring-1 ring-offset-1 ring-current/20" : "bg-white text-foreground/40 border-[#e8e5df] hover:border-foreground/20 hover:text-foreground/60"}
+                      disabled:opacity-40 disabled:cursor-not-allowed`}
                   >
                     {cfg.label}
                   </button>
@@ -335,39 +294,21 @@ function InquiryDetail({
             </div>
           </section>
 
-          {/* Notes */}
           <section>
             <SectionLabel>Internal Notes</SectionLabel>
-
             {notes.length > 0 ? (
               <div className="space-y-2 mb-3">
                 {notes.map((note) => (
-                  <div
-                    key={note.id}
-                    className="flex gap-3 items-start bg-[#f7f6f3] border border-[#ede9e3] px-3 py-2.5 rounded group"
-                  >
+                  <div key={note.id} className="flex gap-3 items-start bg-[#f7f6f3] border border-[#ede9e3] px-3 py-2.5 rounded group">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm text-foreground/75 leading-relaxed whitespace-pre-wrap">
-                        {note.text}
-                      </p>
+                      <p className="text-sm text-foreground/75 leading-relaxed whitespace-pre-wrap">{note.text}</p>
                       <p className="text-[10px] text-foreground/30 mt-1.5">
-                        {new Date(note.createdAt).toLocaleDateString("en-US", {
-                          month: "short",
-                          day: "numeric",
-                          year: "numeric",
-                        })}{" "}
-                        &middot;{" "}
-                        {new Date(note.createdAt).toLocaleTimeString("en-US", {
-                          hour: "numeric",
-                          minute: "2-digit",
-                        })}
+                        {new Date(note.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                        {" · "}
+                        {new Date(note.createdAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
                       </p>
                     </div>
-                    <button
-                      onClick={() => handleDeleteNote(note.id)}
-                      className="text-foreground/20 hover:text-red-400 transition-colors shrink-0 opacity-0 group-hover:opacity-100 mt-0.5"
-                      aria-label="Delete note"
-                    >
+                    <button onClick={() => handleDeleteNote(note.id)} className="text-foreground/20 hover:text-red-400 transition-colors shrink-0 opacity-0 group-hover:opacity-100 mt-0.5" aria-label="Delete note">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -376,32 +317,20 @@ function InquiryDetail({
             ) : (
               <p className="text-xs text-foreground/30 italic mb-3">No notes yet.</p>
             )}
-
             <div className="flex gap-2 items-end">
               <textarea
                 value={noteText}
                 onChange={(e) => setNoteText(e.target.value)}
                 placeholder="Add an internal note… (Cmd+Enter to save)"
                 rows={2}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-                    e.preventDefault();
-                    handleAddNote();
-                  }
-                }}
+                onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); handleAddNote(); } }}
                 className="flex-1 text-sm border border-[#e8e5df] bg-white px-3 py-2 rounded resize-none focus:outline-none focus:border-foreground/30 placeholder:text-foreground/25 transition-colors"
               />
-              <button
-                onClick={handleAddNote}
-                disabled={savingNote || !noteText.trim()}
-                className="h-9 w-9 flex items-center justify-center bg-[#0f0e0c] text-white rounded disabled:opacity-30 hover:bg-[#0f0e0c]/80 transition-colors shrink-0"
-                aria-label="Add note"
-              >
+              <button onClick={handleAddNote} disabled={savingNote || !noteText.trim()} className="h-9 w-9 flex items-center justify-center bg-[#0f0e0c] text-white rounded disabled:opacity-30 hover:bg-[#0f0e0c]/80 transition-colors shrink-0" aria-label="Add note">
                 <Plus className="w-4 h-4" />
               </button>
             </div>
           </section>
-
         </div>
       </div>
     </>
@@ -430,25 +359,21 @@ export default function AtelierInquiries() {
 
   useEffect(() => { fetchInquiries(); }, [fetchInquiries]);
 
-  const services = useMemo(() => {
-    return Array.from(new Set(inquiries.map((i) => i.service))).sort();
-  }, [inquiries]);
+  const services = useMemo(() => Array.from(new Set(inquiries.map((i) => i.service))).sort(), [inquiries]);
 
   const filtered = useMemo(() => {
     let list = [...inquiries];
     if (search.trim()) {
       const q = search.toLowerCase();
-      list = list.filter(
-        (i) =>
-          `${i.firstName} ${i.lastName}`.toLowerCase().includes(q) ||
-          i.email.toLowerCase().includes(q) ||
-          i.phone.toLowerCase().includes(q),
+      list = list.filter((i) =>
+        `${i.firstName} ${i.lastName}`.toLowerCase().includes(q) ||
+        i.email.toLowerCase().includes(q) ||
+        i.phone.toLowerCase().includes(q),
       );
     }
     if (serviceFilter !== "all") list = list.filter((i) => i.service === serviceFilter);
     if (statusFilter !== "all") list = list.filter((i) => (i.status ?? "new") === statusFilter);
-    list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    return list;
+    return list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
   }, [inquiries, search, serviceFilter, statusFilter]);
 
   function handleUpdate(updated: Inquiry) {
@@ -456,27 +381,57 @@ export default function AtelierInquiries() {
     setSelected(updated);
   }
 
-  const controlSelect =
-    "text-xs border border-[#e8e5df] bg-white px-3 py-2 text-foreground/60 focus:outline-none focus:border-foreground/30 rounded transition-colors";
+  function handleExport() {
+    const rows = filtered.map((i) => ({
+      id: i.id,
+      firstName: i.firstName,
+      lastName: i.lastName,
+      email: i.email,
+      phone: i.phone,
+      service: i.service,
+      occasion: i.occasion,
+      eventDate: i.eventDate,
+      guests: i.guests,
+      location: i.location,
+      office: i.office,
+      venue: i.venue ?? "",
+      destinationEvent: i.destinationEvent,
+      destinationServices: i.destinationServices,
+      status: i.status ?? "new",
+      hearAboutUs: i.hearAboutUs ?? "",
+      additional: i.additional ?? "",
+      createdAt: i.createdAt,
+    }));
+    downloadCsv(`inquiries-${new Date().toISOString().slice(0, 10)}.csv`, rows);
+  }
+
+  const controlSelect = "text-xs border border-[#e8e5df] bg-white px-3 py-2 text-foreground/60 focus:outline-none focus:border-foreground/30 rounded transition-colors";
 
   return (
     <div className="max-w-7xl mx-auto">
-      {/* Header */}
       <div className="mb-6 flex items-end justify-between gap-4 flex-wrap">
         <div>
           <p className="text-[10px] uppercase tracking-[0.3em] text-foreground/40 mb-1">Submissions</p>
           <h2 className="font-serif text-2xl text-foreground/80">Client Inquiries</h2>
         </div>
-        {!loading && !error && inquiries.length > 0 && (
-          <span className="text-xs text-foreground/40 tracking-widest">
-            {filtered.length !== inquiries.length
-              ? `${filtered.length} of ${inquiries.length}`
-              : `${inquiries.length} total`}
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {!loading && !error && inquiries.length > 0 && (
+            <span className="text-xs text-foreground/40 tracking-widest">
+              {filtered.length !== inquiries.length ? `${filtered.length} of ${inquiries.length}` : `${inquiries.length} total`}
+            </span>
+          )}
+          {!loading && !error && filtered.length > 0 && (
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 text-[10px] uppercase tracking-widest border border-[#e8e5df] px-3 py-2 text-foreground/50 hover:border-foreground/30 hover:text-foreground/80 transition-colors rounded"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Export CSV
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Controls */}
       {!loading && !error && inquiries.length > 0 && (
         <div className="flex flex-wrap gap-2 mb-4">
           <div className="relative flex-1 min-w-52">
@@ -489,10 +444,7 @@ export default function AtelierInquiries() {
               className="w-full pl-9 pr-8 py-2 text-xs border border-[#e8e5df] bg-white focus:outline-none focus:border-foreground/30 rounded text-foreground/70 placeholder:text-foreground/30 transition-colors"
             />
             {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/30 hover:text-foreground/60"
-              >
+              <button onClick={() => setSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/30 hover:text-foreground/60">
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
@@ -506,39 +458,30 @@ export default function AtelierInquiries() {
             {STATUSES.map((s) => <option key={s} value={s}>{STATUS_CONFIG[s].label}</option>)}
           </select>
           {(search || serviceFilter !== "all" || statusFilter !== "all") && (
-            <button
-              onClick={() => { setSearch(""); setServiceFilter("all"); setStatusFilter("all"); }}
-              className="text-[10px] uppercase tracking-widest text-foreground/40 hover:text-foreground/70 border border-[#e8e5df] px-3 py-2 rounded transition-colors"
-            >
+            <button onClick={() => { setSearch(""); setServiceFilter("all"); setStatusFilter("all"); }} className="text-[10px] uppercase tracking-widest text-foreground/40 hover:text-foreground/70 border border-[#e8e5df] px-3 py-2 rounded transition-colors">
               Clear
             </button>
           )}
         </div>
       )}
 
-      {/* States */}
-      {loading && <LoadingState />}
-      {!loading && error && <ErrorState onRetry={fetchInquiries} />}
-      {!loading && !error && inquiries.length === 0 && (
-        <EmptyState
-          title="No inquiries on record"
-          description="Client submissions from the public site will appear here once received."
-        />
+      {loading && (
+        <div className="bg-white border border-[#e8e5df] p-16 text-center">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-foreground/25">Loading…</p>
+        </div>
       )}
+      {!loading && error && <ErrorState onRetry={fetchInquiries} />}
+      {!loading && !error && inquiries.length === 0 && <EmptyState />}
       {!loading && !error && filtered.length === 0 && inquiries.length > 0 && (
         <div className="bg-white border border-[#e8e5df] p-12 text-center">
           <p className="font-serif text-lg text-foreground/40 mb-2">No matching results</p>
           <p className="text-xs text-foreground/30 mb-6">Try adjusting your search or filters.</p>
-          <button
-            onClick={() => { setSearch(""); setServiceFilter("all"); setStatusFilter("all"); }}
-            className="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest border border-[#e8e5df] px-4 py-2 text-foreground/40 hover:border-foreground/20 hover:text-foreground/70 transition-colors"
-          >
+          <button onClick={() => { setSearch(""); setServiceFilter("all"); setStatusFilter("all"); }} className="inline-flex items-center gap-2 text-[10px] uppercase tracking-widest border border-[#e8e5df] px-4 py-2 text-foreground/40 hover:border-foreground/20 hover:text-foreground/70 transition-colors">
             Clear all filters
           </button>
         </div>
       )}
 
-      {/* Table */}
       {!loading && !error && filtered.length > 0 && (
         <div className="bg-white border border-[#e8e5df] overflow-hidden rounded">
           <div className="overflow-x-auto">
@@ -546,31 +489,21 @@ export default function AtelierInquiries() {
               <thead>
                 <tr className="border-b border-[#e8e5df] bg-[#f7f6f3]">
                   {["Name", "Email", "Phone", "Service", "Event Date", "Guests", "Location", "Status", "Submitted", ""].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 text-[10px] uppercase tracking-[0.2em] text-foreground/40 font-normal whitespace-nowrap">
-                      {h}
-                    </th>
+                    <th key={h} className="text-left px-4 py-3 text-[10px] uppercase tracking-[0.2em] text-foreground/40 font-normal whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {filtered.map((inq) => (
-                  <tr
-                    key={inq.id}
-                    onClick={() => setSelected(inq)}
-                    className="border-b border-[#e8e5df] last:border-0 hover:bg-[#f7f6f3] transition-colors cursor-pointer group"
-                  >
-                    <td className="px-4 py-3 whitespace-nowrap font-medium text-foreground/80">
-                      {inq.firstName} {inq.lastName}
-                    </td>
+                  <tr key={inq.id} onClick={() => setSelected(inq)} className="border-b border-[#e8e5df] last:border-0 hover:bg-[#f7f6f3] transition-colors cursor-pointer group">
+                    <td className="px-4 py-3 whitespace-nowrap font-medium text-foreground/80">{inq.firstName} {inq.lastName}</td>
                     <td className="px-4 py-3 text-foreground/55 max-w-[200px] truncate">{inq.email}</td>
                     <td className="px-4 py-3 text-foreground/55 whitespace-nowrap">{inq.phone}</td>
                     <td className="px-4 py-3 text-foreground/55 whitespace-nowrap">{inq.service}</td>
                     <td className="px-4 py-3 text-foreground/55 whitespace-nowrap">{inq.eventDate}</td>
                     <td className="px-4 py-3 text-foreground/55 text-center">{inq.guests}</td>
                     <td className="px-4 py-3 text-foreground/55 max-w-[140px] truncate">{inq.location}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <StatusBadge status={inq.status ?? "new"} />
-                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap"><StatusBadge status={inq.status ?? "new"} /></td>
                     <td className="px-4 py-3 text-foreground/40 whitespace-nowrap">
                       {new Date(inq.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </td>
@@ -585,13 +518,8 @@ export default function AtelierInquiries() {
         </div>
       )}
 
-      {/* Detail panel */}
       {selected && (
-        <InquiryDetail
-          inquiry={selected}
-          onClose={() => setSelected(null)}
-          onUpdate={handleUpdate}
-        />
+        <InquiryDetail inquiry={selected} onClose={() => setSelected(null)} onUpdate={handleUpdate} />
       )}
     </div>
   );

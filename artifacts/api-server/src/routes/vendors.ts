@@ -3,6 +3,7 @@ import { db, vendorApplicationsTable } from "@workspace/db";
 import { z } from "zod/v4";
 import { logger } from "../lib/logger";
 import { sendTelegramMessage, formatNotification } from "../lib/telegram";
+import { getBrandSettings } from "../lib/brandSettings";
 import { vendorLimiter } from "../lib/rateLimiter";
 
 const router: IRouter = Router();
@@ -61,24 +62,25 @@ router.post("/vendor-applications", vendorLimiter, async (req, res) => {
       })
       .returning({ id: vendorApplicationsTable.id });
 
-    const message = formatNotification("New Vendor Application", [
-      { label: "Business", value: data.businessName },
-      { label: "Contact", value: data.contactName },
-      { label: "Email", value: data.email },
-      { label: "Phone", value: data.phone || null },
-      { label: "Category", value: data.category },
-      { label: "Regions", value: data.regions },
-      { label: "Years Active", value: data.yearsActive || null },
-      { label: "Website", value: data.website || null },
-      { label: "Instagram", value: data.instagram || null },
-      { label: "Portfolio URL", value: data.portfolioUrl || null },
-      { label: "Heard About Us", value: data.hearAboutUs || null },
-      { label: "Bio", value: data.bio },
-    ]);
-
-    sendTelegramMessage(message).catch((err) =>
-      logger.error({ err }, "Telegram notification failed (vendor application)"),
-    );
+    getBrandSettings()
+      .then((brand) => {
+        const message = formatNotification(`New Vendor Application — ${brand.siteName}`, [
+          { label: "Business", value: data.businessName },
+          { label: "Contact", value: data.contactName },
+          { label: "Email", value: data.email },
+          { label: "Phone", value: data.phone || null },
+          { label: "Category", value: data.category },
+          { label: "Regions", value: data.regions },
+          { label: "Years Active", value: data.yearsActive || null },
+          { label: "Website", value: data.website || null },
+          { label: "Instagram", value: data.instagram || null },
+          { label: "Portfolio URL", value: data.portfolioUrl || null },
+          { label: "Heard About Us", value: data.hearAboutUs || null },
+          { label: "Bio", value: data.bio },
+        ]);
+        return sendTelegramMessage(message);
+      })
+      .catch((err) => logger.error({ err }, "Telegram notification failed (vendor application)"));
 
     return res.status(201).json({ id: inserted.id, status: "received" });
   } catch (err) {

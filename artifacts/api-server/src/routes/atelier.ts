@@ -6,6 +6,7 @@ import { logger } from "../lib/logger";
 import { signAtelierToken, requireAtelierAuth } from "../lib/atelierAuth";
 import { adminLimiter } from "../lib/rateLimiter";
 import { sendTelegramMessage, formatNotification } from "../lib/telegram";
+import { getBrandSettings, saveBrandSettings, BRAND_DEFAULTS } from "../lib/brandSettings";
 
 const router: IRouter = Router();
 
@@ -76,6 +77,50 @@ router.get("/atelier/config", requireAtelierAuth, async (_req, res) => {
   }
 });
 
+// ── GET /api/atelier/settings/brand ──────────────────────────────────────────
+router.get("/atelier/settings/brand", requireAtelierAuth, async (_req, res) => {
+  try {
+    const settings = await getBrandSettings();
+    return res.json(settings);
+  } catch (err) {
+    logger.error({ err }, "Atelier: failed to fetch brand settings");
+    return res.status(500).json({ error: "Could not load brand settings" });
+  }
+});
+
+// ── PUT /api/atelier/settings/brand ──────────────────────────────────────────
+const brandSettingsSchema = z.object({
+  siteName: z.string().min(1).max(120),
+  siteTagline: z.string().max(255),
+  logoUrl: z.string().max(500),
+  faviconUrl: z.string().max(500),
+  primaryEmail: z.string().max(255),
+  primaryPhone: z.string().max(64),
+  instagramUrl: z.string().max(500),
+  linkedinUrl: z.string().max(500),
+  pinterestUrl: z.string().max(500),
+  ogImageUrl: z.string().max(500),
+});
+
+router.put("/atelier/settings/brand", requireAtelierAuth, async (req, res) => {
+  const parsed = brandSettingsSchema.safeParse(req.body);
+  if (!parsed.success) {
+    return res.status(400).json({ error: "Invalid settings data", details: parsed.error.issues });
+  }
+
+  try {
+    await saveBrandSettings({
+      ...BRAND_DEFAULTS,
+      ...parsed.data,
+    });
+    logger.info("Atelier: brand settings updated");
+    return res.json({ updated: true });
+  } catch (err) {
+    logger.error({ err }, "Atelier: failed to save brand settings");
+    return res.status(500).json({ error: "Could not save settings" });
+  }
+});
+
 // ── PATCH /api/atelier/settings/instagram ────────────────────────────────────
 const instagramSettingsSchema = z.object({
   handle: z.string().max(120).optional(),
@@ -119,7 +164,9 @@ router.post("/atelier/telegram/test", requireAtelierAuth, adminLimiter, async (_
     return res.status(503).json({ error: "Telegram not configured. Set TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID." });
   }
 
-  const message = formatNotification("Test Notification — Aurelia & Co.", [
+  const brand = await getBrandSettings().catch(() => BRAND_DEFAULTS);
+
+  const message = formatNotification(`Test Notification — ${brand.siteName}`, [
     { label: "Status", value: "Connected and operational" },
     { label: "Sent at", value: new Date().toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short" }) },
   ]);

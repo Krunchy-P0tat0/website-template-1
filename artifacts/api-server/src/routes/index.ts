@@ -4,6 +4,7 @@ import inquiriesRouter from "./inquiries";
 import newsletterRouter from "./newsletter";
 import vendorsRouter from "./vendors";
 import instagramRouter from "./instagram";
+import brandRouter from "./brand";
 import atelierRouter from "./atelier";
 
 const router: IRouter = Router();
@@ -13,6 +14,7 @@ router.use(inquiriesRouter);
 router.use(newsletterRouter);
 router.use(vendorsRouter);
 router.use(instagramRouter);
+router.use(brandRouter);
 router.use(atelierRouter);
 
 export default router;

@@ -3,6 +3,7 @@ import { db, newsletterTable } from "@workspace/db";
 import { z } from "zod/v4";
 import { logger } from "../lib/logger";
 import { sendTelegramMessage, formatNotification } from "../lib/telegram";
+import { getBrandSettings } from "../lib/brandSettings";
 import { newsletterLimiter } from "../lib/rateLimiter";
 
 const router: IRouter = Router();
@@ -28,13 +29,15 @@ router.post("/newsletter", newsletterLimiter, async (req, res) => {
       .returning({ id: newsletterTable.id });
 
     if (row) {
-      const message = formatNotification("New Newsletter Subscriber", [
-        { label: "Email", value: email },
-        { label: "Source", value: source ?? "footer" },
-      ]);
-      sendTelegramMessage(message).catch((err) =>
-        logger.error({ err }, "Telegram notification failed (newsletter)"),
-      );
+      getBrandSettings()
+        .then((brand) => {
+          const message = formatNotification(`New Newsletter Subscriber — ${brand.siteName}`, [
+            { label: "Email", value: email },
+            { label: "Source", value: source ?? "footer" },
+          ]);
+          return sendTelegramMessage(message);
+        })
+        .catch((err) => logger.error({ err }, "Telegram notification failed (newsletter)"));
     }
 
     return res.status(201).json({ status: "subscribed" });

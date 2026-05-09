@@ -49,8 +49,8 @@ const corsOptions: cors.CorsOptions = {
     logger.warn({ requestOrigin, allowedOrigins }, "CORS: blocked request from unknown origin");
     return callback(new Error("Not allowed by CORS"));
   },
-  methods: ["GET", "POST", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "x-admin-token"],
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "x-admin-token", "Authorization"],
   credentials: false,
 };
 

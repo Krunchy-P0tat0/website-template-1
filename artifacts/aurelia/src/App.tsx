@@ -9,6 +9,7 @@ import { Footer } from "@/components/layout/footer";
 import { NewsletterPopup } from "@/components/newsletter-popup";
 import { ScrollToTop } from "@/components/scroll-to-top";
 import { PageTitle } from "@/components/page-title";
+import { SiteSettingsProvider } from "@/lib/SiteSettingsContext";
 import {
   AtelierAuthContext,
   type AtelierAuthContextValue,
@@ -120,7 +121,6 @@ function AtelierRouter() {
   const [location] = useLocation();
   const token = getToken();
 
-  // If already logged in and hitting /atelier root, redirect to dashboard
   if (location === "/atelier" && token) {
     return <Redirect to="/atelier/dashboard" />;
   }
@@ -154,7 +154,7 @@ function AtelierRouter() {
   );
 }
 
-// ── Root router — splits admin vs public ─────────────────────────────────────
+// ── Root router ───────────────────────────────────────────────────────────────
 function RootRouter() {
   const [location] = useLocation();
   const isAtelier = location === "/atelier" || location.startsWith("/atelier/");
@@ -195,12 +195,14 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <AtelierAuthProvider>
-            <RootRouter />
-          </AtelierAuthProvider>
-        </WouterRouter>
-        <Toaster />
+        <SiteSettingsProvider>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <AtelierAuthProvider>
+              <RootRouter />
+            </AtelierAuthProvider>
+          </WouterRouter>
+          <Toaster />
+        </SiteSettingsProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

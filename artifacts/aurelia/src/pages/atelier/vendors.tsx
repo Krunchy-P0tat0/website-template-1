@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Download } from "lucide-react";
 import { atelierFetch } from "@/lib/atelierAuth";
 
 interface Vendor {
@@ -15,6 +15,24 @@ interface Vendor {
   bio: string;
   portfolioUrl: string | null;
   createdAt: string;
+}
+
+function downloadCsv(filename: string, rows: Record<string, unknown>[]) {
+  if (!rows.length) return;
+  const keys = Object.keys(rows[0]);
+  const esc = (v: unknown) => {
+    const s = String(v ?? "");
+    return s.includes(",") || s.includes('"') || s.includes("\n") ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const csv = [keys.join(","), ...rows.map((r) => keys.map((k) => esc(r[k])).join(","))].join("\n");
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function Ornament() {
@@ -53,18 +71,49 @@ export default function AtelierVendors() {
 
   useEffect(() => { fetchVendors(); }, [fetchVendors]);
 
+  function handleExport() {
+    downloadCsv(
+      `vendor-applications-${new Date().toISOString().slice(0, 10)}.csv`,
+      vendors.map((v) => ({
+        id: v.id,
+        businessName: v.businessName,
+        contactName: v.contactName,
+        email: v.email,
+        phone: v.phone ?? "",
+        category: v.category,
+        regions: v.regions,
+        website: v.website ?? "",
+        instagram: v.instagram ?? "",
+        portfolioUrl: v.portfolioUrl ?? "",
+        bio: v.bio,
+        createdAt: v.createdAt,
+      })),
+    );
+  }
+
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="mb-8 flex items-end justify-between">
+      <div className="mb-8 flex items-end justify-between gap-4 flex-wrap">
         <div>
           <p className="text-[10px] uppercase tracking-[0.3em] text-foreground/40 mb-1">Applications</p>
           <h2 className="font-serif text-2xl text-foreground/80">Vendor Applications</h2>
         </div>
-        {!loading && !error && vendors.length > 0 && (
-          <span className="text-xs text-foreground/40 tracking-widest">
-            {vendors.length} {vendors.length === 1 ? "application" : "applications"}
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          {!loading && !error && vendors.length > 0 && (
+            <span className="text-xs text-foreground/40 tracking-widest">
+              {vendors.length} {vendors.length === 1 ? "application" : "applications"}
+            </span>
+          )}
+          {!loading && !error && vendors.length > 0 && (
+            <button
+              onClick={handleExport}
+              className="flex items-center gap-2 text-[10px] uppercase tracking-widest border border-[#e8e5df] px-3 py-2 text-foreground/50 hover:border-foreground/30 hover:text-foreground/80 transition-colors rounded"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Export CSV
+            </button>
+          )}
+        </div>
       </div>
 
       {loading && (
@@ -122,36 +171,14 @@ export default function AtelierVendors() {
                   <span className="text-foreground/30 text-xs">{expanded === v.id ? "▲" : "▼"}</span>
                 </div>
               </button>
-
               {expanded === v.id && (
                 <div className="px-6 pb-6 border-t border-[#e8e5df] pt-4 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 text-xs">
                   <Field label="Contact" value={v.contactName} />
-                  <Field
-                    label="Email"
-                    value={<a href={`mailto:${v.email}`} className="hover:underline">{v.email}</a>}
-                  />
+                  <Field label="Email" value={<a href={`mailto:${v.email}`} className="hover:underline">{v.email}</a>} />
                   {v.phone && <Field label="Phone" value={v.phone} />}
-                  {v.website && (
-                    <Field
-                      label="Website"
-                      value={
-                        <a href={v.website} target="_blank" rel="noopener noreferrer" className="hover:underline truncate block">
-                          {v.website}
-                        </a>
-                      }
-                    />
-                  )}
+                  {v.website && <Field label="Website" value={<a href={v.website} target="_blank" rel="noopener noreferrer" className="hover:underline truncate block">{v.website}</a>} />}
                   {v.instagram && <Field label="Instagram" value={v.instagram} />}
-                  {v.portfolioUrl && (
-                    <Field
-                      label="Portfolio"
-                      value={
-                        <a href={v.portfolioUrl} target="_blank" rel="noopener noreferrer" className="hover:underline truncate block">
-                          {v.portfolioUrl}
-                        </a>
-                      }
-                    />
-                  )}
+                  {v.portfolioUrl && <Field label="Portfolio" value={<a href={v.portfolioUrl} target="_blank" rel="noopener noreferrer" className="hover:underline truncate block">{v.portfolioUrl}</a>} />}
                   <div className="md:col-span-2">
                     <p className="text-[10px] uppercase tracking-[0.2em] text-foreground/30 mb-1.5">Bio</p>
                     <p className="text-foreground/60 leading-relaxed whitespace-pre-wrap">{v.bio}</p>

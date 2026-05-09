@@ -4,6 +4,7 @@ import { desc } from "drizzle-orm";
 import { z } from "zod/v4";
 import { logger } from "../lib/logger";
 import { sendTelegramMessage, formatNotification } from "../lib/telegram";
+import { getBrandSettings } from "../lib/brandSettings";
 import { inquiryLimiter, adminLimiter } from "../lib/rateLimiter";
 
 const router: IRouter = Router();
@@ -45,26 +46,27 @@ router.post("/inquiries", inquiryLimiter, async (req, res) => {
       })
       .returning({ id: inquiriesTable.id });
 
-    const message = formatNotification("New Inquiry — Aurelia & Co.", [
-      { label: "Name", value: `${data.firstName} ${data.lastName}` },
-      { label: "Email", value: data.email },
-      { label: "Phone", value: data.phone },
-      { label: "Service", value: data.service },
-      { label: "Occasion", value: data.occasion },
-      { label: "Event Date", value: data.eventDate },
-      { label: "Guests", value: data.guests },
-      { label: "Location", value: data.location },
-      { label: "Destination Event", value: data.destinationEvent === "yes" ? "Yes" : "No" },
-      { label: "Destination Services", value: data.destinationServices === "yes" ? "Yes" : "No" },
-      { label: "Preferred Office", value: data.office },
-      { label: "Featured Venue", value: data.venue || null },
-      { label: "Heard About Us", value: data.hearAboutUs || null },
-      { label: "Notes", value: data.additional || null },
-    ]);
-
-    sendTelegramMessage(message).catch((err) =>
-      logger.error({ err }, "Telegram notification failed (inquiry)"),
-    );
+    getBrandSettings()
+      .then((brand) => {
+        const message = formatNotification(`New Inquiry — ${brand.siteName}`, [
+          { label: "Name", value: `${data.firstName} ${data.lastName}` },
+          { label: "Email", value: data.email },
+          { label: "Phone", value: data.phone },
+          { label: "Service", value: data.service },
+          { label: "Occasion", value: data.occasion },
+          { label: "Event Date", value: data.eventDate },
+          { label: "Guests", value: data.guests },
+          { label: "Location", value: data.location },
+          { label: "Destination Event", value: data.destinationEvent === "yes" ? "Yes" : "No" },
+          { label: "Destination Services", value: data.destinationServices === "yes" ? "Yes" : "No" },
+          { label: "Preferred Office", value: data.office },
+          { label: "Featured Venue", value: data.venue || null },
+          { label: "Heard About Us", value: data.hearAboutUs || null },
+          { label: "Notes", value: data.additional || null },
+        ]);
+        return sendTelegramMessage(message);
+      })
+      .catch((err) => logger.error({ err }, "Telegram notification failed (inquiry)"));
 
     return res.status(201).json({ id: inserted.id, status: "received" });
   } catch (err) {

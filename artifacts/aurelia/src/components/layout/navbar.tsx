@@ -2,6 +2,7 @@ import { Link, useLocation } from "wouter";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronDown } from "lucide-react";
+import { useSiteSettings } from "@/lib/SiteSettingsContext";
 
 const navLinks = [
   { name: "Weddings", href: "/weddings" },
@@ -42,20 +43,42 @@ const navLinks = [
   },
 ];
 
+function LogoMark({ siteName, logoUrl, scrolled }: { siteName: string; logoUrl: string; scrolled: boolean }) {
+  if (logoUrl) {
+    return (
+      <img
+        src={logoUrl}
+        alt={siteName}
+        className={`object-contain transition-all duration-500 ${scrolled ? "h-7 md:h-8" : "h-8 md:h-10 lg:h-12"}`}
+      />
+    );
+  }
+  return (
+    <span
+      className={`font-serif tracking-widest text-foreground transition-all duration-500 block ${
+        scrolled
+          ? "text-lg md:text-xl lg:text-2xl"
+          : "text-xl md:text-2xl lg:text-4xl"
+      }`}
+    >
+      {siteName.toUpperCase()}
+    </span>
+  );
+}
+
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [location] = useLocation();
+  const { settings } = useSiteSettings();
+  const { siteName, logoUrl } = settings;
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
+    const handleScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close mobile menu on route change
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [location]);
@@ -70,22 +93,9 @@ export function Navbar() {
         }`}
       >
         <div className="container mx-auto px-4 md:px-12">
-          {/* Mobile: logo left, hamburger right. Desktop: stacked center. */}
           <div className="flex items-center justify-between lg:flex-col lg:items-center lg:gap-6">
-            <Link
-              href="/"
-              className="block lg:mb-0"
-              aria-label="Aurelia & Co. Home"
-            >
-              <span
-                className={`font-serif tracking-widest text-foreground transition-all duration-500 block ${
-                  scrolled
-                    ? "text-lg md:text-xl lg:text-2xl"
-                    : "text-xl md:text-2xl lg:text-4xl"
-                }`}
-              >
-                AURELIA & CO.
-              </span>
+            <Link href="/" className="block lg:mb-0" aria-label={`${siteName} Home`}>
+              <LogoMark siteName={siteName} logoUrl={logoUrl} scrolled={scrolled} />
             </Link>
 
             <nav className="hidden lg:flex items-center space-x-8">
@@ -129,7 +139,6 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -140,9 +149,13 @@ export function Navbar() {
             className="fixed inset-0 z-50 bg-background flex flex-col"
           >
             <div className="p-5 flex justify-between items-center border-b border-border">
-              <span className="font-serif text-xl tracking-widest">
-                AURELIA & CO.
-              </span>
+              {logoUrl ? (
+                <img src={logoUrl} alt={siteName} className="h-8 object-contain" />
+              ) : (
+                <span className="font-serif text-xl tracking-widest">
+                  {siteName.toUpperCase()}
+                </span>
+              )}
               <button
                 onClick={() => setMobileMenuOpen(false)}
                 aria-label="Close menu"
