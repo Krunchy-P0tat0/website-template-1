@@ -93,7 +93,7 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
     return res.status(403).json({ error: "Forbidden" });
   }
   logger.error({ err }, "Unhandled error");
-  res.status(500).json({ error: "Internal server error" });
+  return res.status(500).json({ error: "Internal server error" });
 });
 
 export default app;
