@@ -3,126 +3,94 @@ import { Link } from "wouter";
 import { portfolioProjects, weddingOfferings } from "@/lib/data";
 import { scenes } from "@/lib/realPhotos";
 
+const fadeUp = (delay = 0) => ({
+  initial: { opacity: 0, y: 18 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true },
+  transition: { duration: 0.65, delay, ease: [0.22, 1, 0.36, 1] },
+});
+
 export default function Weddings() {
   const weddings = portfolioProjects.filter((p) => p.category === "Weddings");
 
   return (
-    <div className="w-full bg-background">
-      <section className="pt-32 pb-24 px-6 md:px-12">
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="max-w-4xl mx-auto text-center"
-        >
-          <p className="text-xs uppercase tracking-[0.3em] text-primary mb-6">
+    <div className="w-full bg-[#F3F3F3]">
+      {/* Hero text */}
+      <section className="pt-40 pb-16 px-6 md:px-12 bg-white">
+        <div className="max-w-4xl mx-auto text-center">
+          <motion.p
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.2 }}
+            className="cc-eyebrow mb-6"
+          >
             Bespoke Weddings
-          </p>
-          <h1 className="font-serif text-5xl md:text-7xl mb-8 leading-tight">
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.35, ease: [0.22, 1, 0.36, 1] }}
+            className="font-serif text-[clamp(2.5rem,6vw,5rem)] leading-[1.1] font-light text-[#333333] mb-8"
+          >
             Transcendent design.<br />Flawless execution.
-          </h1>
-          <p className="text-foreground/70 leading-relaxed text-lg">
-            We craft deeply personal, architecturally stunning weddings for
-            couples who value the extraordinary — and the extraordinary
-            stillness that surrounds it.
-          </p>
-        </motion.div>
-      </section>
-
-      <section className="px-6 md:px-12 mb-32">
-        <div className="container mx-auto">
-          <img
-            src={scenes.weddingsHero}
-            alt="An Aurelia wedding"
-            className="w-full max-w-full h-[70vh] object-cover"
-            loading="lazy"
-          />
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 0.55 }}
+            className="text-[#333333]/60 leading-relaxed text-lg font-light max-w-2xl mx-auto"
+          >
+            We craft deeply personal, architecturally stunning weddings for couples who value the extraordinary — and the extraordinary stillness that surrounds it.
+          </motion.p>
         </div>
       </section>
 
-      <section className="py-24 px-6 md:px-12 bg-secondary/30">
-        <div className="container mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4 }}
-            className="max-w-3xl mx-auto text-center mb-20"
-          >
-            <p className="text-xs uppercase tracking-[0.3em] text-primary mb-6">
-              What We Deliver
-            </p>
-            <h2 className="font-serif text-4xl md:text-5xl leading-tight">
-              An end-to-end wedding atelier.
-            </h2>
-          </motion.div>
+      {/* Hero image — full bleed */}
+      <section className="px-0 mb-0">
+        <img
+          src={scenes.weddingsHero}
+          alt="An Aurelia wedding"
+          className="w-full h-[72vh] object-cover"
+          loading="lazy"
+        />
+      </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16">
+      {/* Offerings */}
+      <section className="py-24 px-6 md:px-12 bg-white">
+        <div className="max-w-6xl mx-auto">
+          <div className="max-w-2xl mx-auto text-center mb-20">
+            <motion.p {...fadeUp(0)} className="cc-eyebrow mb-5">What We Deliver</motion.p>
+            <motion.h2 {...fadeUp(0.08)} className="font-serif text-[clamp(1.8rem,4vw,3rem)] font-light text-[#333333]">
+              An end-to-end wedding atelier.
+            </motion.h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-14">
             {weddingOfferings.map((item, i) => (
-              <motion.div
-                key={item.title}
-                initial={{ opacity: 0, y: 16 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: (i % 3) * 0.07 }}
-                className="border-t border-border pt-8"
-              >
-                <p className="text-xs uppercase tracking-[0.3em] text-primary mb-4">
-                  0{i + 1}
-                </p>
-                <h3 className="font-serif text-2xl mb-4">{item.title}</h3>
-                <p className="text-foreground/70 leading-relaxed">
-                  {item.description}
-                </p>
+              <motion.div key={item.title} {...fadeUp((i % 3) * 0.08)} className="border-t border-black/10 pt-8">
+                <p className="text-[10px] uppercase tracking-[0.22em] text-[#003D68] mb-4">0{i + 1}</p>
+                <h3 className="font-serif text-xl mb-4 text-[#333333]">{item.title}</h3>
+                <p className="text-[#333333]/60 leading-relaxed text-sm font-light">{item.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
+      {/* Portfolio */}
       {weddings.length > 0 && (
-        <section className="py-32 px-6 md:px-12">
-          <div className="container mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4 }}
-              className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6"
-            >
-              <h2 className="font-serif text-4xl md:text-5xl leading-tight">
+        <section className="py-20 px-6 md:px-12 bg-[#F3F3F3]">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-14 gap-6">
+              <motion.h2 {...fadeUp(0)} className="font-serif text-[clamp(1.8rem,4vw,3rem)] font-light text-[#333333]">
                 Selected Weddings
-              </h2>
-              <Link
-                href="/portfolio"
-                className="text-xs uppercase tracking-widest hover:text-primary transition-colors duration-200 pb-1 border-b border-foreground/20"
-              >
+              </motion.h2>
+              <Link href="/portfolio" className="text-[10px] uppercase tracking-[0.22em] text-[#333333]/50 border-b border-[#333333]/20 pb-1 hover:text-[#333333] transition-colors">
                 View Full Portfolio
               </Link>
-            </motion.div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24">
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
               {weddings.map((project, i) => (
-                <motion.div
-                  key={project.id}
-                  initial={{ opacity: 0, y: 16 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: i * 0.08 }}
-                  className={`group ${i % 2 === 1 ? "md:mt-32" : ""}`}
-                >
+                <motion.div key={project.id} {...fadeUp(i * 0.08)} className={`group ${i % 2 === 1 ? "md:mt-24" : ""}`}>
                   <Link href={`/portfolio/${project.slug}`}>
-                    <div className="overflow-hidden aspect-[4/5] mb-6">
-                      <img
-                        src={project.image}
-                        alt={project.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                      />
+                    <div className="overflow-hidden aspect-[4/5] mb-5">
+                      <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
                     </div>
-                    <h3 className="font-serif text-3xl mb-2">{project.title}</h3>
-                    <p className="text-sm text-foreground/60">
-                      {project.destination}
-                    </p>
+                    <h3 className="font-serif text-xl mb-1 text-[#333333]">{project.title}</h3>
+                    <p className="text-sm text-[#333333]/55 font-light">{project.destination}</p>
                   </Link>
                 </motion.div>
               ))}
@@ -131,16 +99,16 @@ export default function Weddings() {
         </section>
       )}
 
-      <section className="py-32 px-6 md:px-12 border-t border-border text-center">
-        <h2 className="font-serif text-4xl md:text-5xl mb-8 max-w-3xl mx-auto leading-tight">
+      {/* CTA */}
+      <section className="py-24 px-6 bg-[#003D68] text-white text-center">
+        <motion.h2 {...fadeUp(0)} className="font-serif text-[clamp(1.8rem,4vw,3rem)] font-light mb-8">
           Tell us about your wedding.
-        </h2>
-        <Link
-          href="/inquiry"
-          className="inline-block border border-foreground text-foreground text-xs uppercase tracking-widest px-10 py-4 hover:bg-foreground hover:text-background transition-colors duration-200"
-        >
-          Begin a Conversation
-        </Link>
+        </motion.h2>
+        <motion.div {...fadeUp(0.1)}>
+          <Link href="/inquiry" className="inline-block border border-white/40 text-white text-[10px] uppercase tracking-[0.28em] px-12 py-4 hover:bg-white hover:text-[#003D68] transition-all duration-300">
+            Begin a Conversation
+          </Link>
+        </motion.div>
       </section>
     </div>
   );
